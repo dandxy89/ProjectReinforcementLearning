@@ -22,6 +22,7 @@ class PolicyEnum:
     """
     """
     EGREEDY = "e-greedy"
+    SOFTMAX = "softmax"
 
     def __repr__(self):
         return "< Policy Enum >"

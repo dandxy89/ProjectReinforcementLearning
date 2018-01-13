@@ -1,29 +1,29 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.eGreedy
+""" RLBook.nArmedBandit.Softmax
 
-*   From: 2.2
+*   From: 2.3
 
 """
 import numpy as np
 
-DEFAULT_EPSILON = [0, 0.01, 0.1]
+DEFAULT_TEMPERATURE = [0.1, 0.3, 0.7]
 np.random.seed(191989)
 
 
-class eGreedy:
+class Softmax:
     """ e-Greedy Action Decision-making
     """
 
     ACTION_REWARDS = None
-    EPSILON = DEFAULT_EPSILON
+    TEMPERATURES = DEFAULT_TEMPERATURE
     ACTIONS = None
     BANDITS = 1
     TRIAL_COUNT = 1
-    EPSILON_COUNT = 3
+    TEMPERATURES_COUNT = 3
 
-    def __init__(self, num, trials, epsilon=None):
-        """ Initialise a e-Greedy Decision-maker
+    def __init__(self, num, trials, temperatures=None):
+        """ Initialise a Softmax Decision-maker
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
@@ -35,31 +35,37 @@ class eGreedy:
         self.TRIAL_COUNT = trials
 
         # Using alternative epsilons
-        if epsilon is not None:
-            self.EPSILON = epsilon
-            self.count_epsilons()
+        if temperatures is not None:
+            self.TEMPERATURES = temperatures
+            self.count_temperatures()
 
         # Storage for Action Rewards
-        self.ACTION_REWARDS = np.zeros(shape=(num, self.EPSILON_COUNT))
-        self.ACTION_COUNTS = np.zeros(shape=(num, self.EPSILON_COUNT))
+        self.ACTION_REWARDS = np.zeros(shape=(num, self.TEMPERATURES_COUNT))
+        self.ACTION_COUNTS = np.zeros(shape=(num, self.TEMPERATURES_COUNT))
 
         # Storage for Action Take
-        self.ACTIONS = np.zeros(shape=(trials, self.EPSILON_COUNT))
+        self.ACTIONS = np.zeros(shape=(trials, self.TEMPERATURES_COUNT))
 
     def __repr__(self):
         return "< e-Greedy [nBandits {}, nTrials {}, epsilons {}] >".format(self.N_BANDITS,
                                                                             self.TRIAL_COUNT,
-                                                                            self.EPSILON)
+                                                                            self.TEMPERATURES)
 
-    def count_epsilons(self):
-        self.EPSILON_COUNT = len(self.EPSILON)
+    def count_temperatures(self):
+        self.TEMPERATURES_COUNT = len(self.TEMPERATURES)
 
     def random_action(self):
         return np.random.randint(self.N_BANDITS, size=1)
 
-    def greedy_action(self, index):
-        updated = np.nan_to_num(self.ACTION_REWARDS[:, index] / self.ACTION_COUNTS[:, index])
-        return np.argmax(updated)
+    def get_value(self, a, index):
+        return np.nan_to_num(self.ACTION_REWARDS[a, index] / self.ACTION_COUNTS[a, index])
+
+    def softmax_exp(self, a, temperature, index):
+        return np.exp(self.get_value(a=a, index=index) / temperature)
+
+    def boltzmann_distribution(self, action, temperature, index):
+        return self.softmax_exp(action, temperature, index=index) / sum(
+            [self.softmax_exp(a=a, temperature=temperature, index=index) for a in range(self.N_BANDITS)])
 
     def update_count(self, index, action):
         self.ACTION_COUNTS[action, index] += 1
@@ -69,11 +75,14 @@ class eGreedy:
 
     def take_action(self, time):
         actions = []
-        for index, epsilon in enumerate(self.EPSILON):
-            # Get the Greedy and Random Action
-            choices = [self.greedy_action(index=index), self.random_action()]
+        for index, temperature in enumerate(self.TEMPERATURES):
+            # Boltzmann Distribution
+            choices = [a for a in range(self.N_BANDITS)]
+            p = [self.boltzmann_distribution(action=a, temperature=temperature, index=index)
+                 for a in range(self.N_BANDITS)]
+
             # Select an Action
-            action = np.random.choice(choices, p=[1 - epsilon, epsilon])
+            action = np.random.choice(choices, p=p)
 
             # Update the Count
             self.update_count(action=action, index=index)
