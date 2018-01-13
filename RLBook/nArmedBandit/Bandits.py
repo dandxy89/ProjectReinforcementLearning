@@ -22,10 +22,10 @@ class OneArmBandit:
         self.mu, self.sigma = mu, sigma
 
     def __str__(self):
-        return "One Arm Bandit with Mean {mu} - Std {sigma}".format(mu=self.mu, sigma=self.sigma)
+        return "< One Arm Bandit with Mean {mu} - Std {sigma} >".format(mu=self.mu, sigma=self.sigma)
 
     def __repr__(self):
-        return "One Arm Bandit with Mean {mu} - Std {sigma}".format(mu=self.mu, sigma=self.sigma)
+        return "< One Arm Bandit with Mean {mu} - Std {sigma} >".format(mu=self.mu, sigma=self.sigma)
 
     def draw(self):
         return np.random.normal(self.mu, self.sigma)
@@ -43,10 +43,10 @@ class NArmBandit:
             self.bandits[bandit_n] = OneArmBandit(mu=bandit_n, sigma=num)
 
     def __str__(self):
-        return "{}-Arm Bandits".format(self.num)
+        return "< {}-Arm Bandits >".format(self.num)
 
     def __repr__(self):
-        return "{}-Arm Bandits".format(self.num)
+        return "< {}-Arm Bandits >".format(self.num)
 
     def show(self):
         """ Display the Bandits (easier to view...)

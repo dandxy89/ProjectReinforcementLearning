@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit
+""" RLBook.Utils
 
 Python Implementation of the RL Book Exercises
 
