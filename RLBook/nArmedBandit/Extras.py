@@ -23,6 +23,8 @@ class PolicyEnum:
     """
     EGREEDY = "e-Greedy"
     SOFTMAX = "Softmax"
+    LINEAR_REWARD_PENALTY = "Linear, reward-penalty"
+    LINEAR_REWARD_INACTION = "Linear, reward-inaction"
 
     def __repr__(self):
         return "< Policy Enum >"

@@ -7,6 +7,8 @@
 """
 import numpy as np
 
+from RLBook.nArmedBandit.Extras import PolicyEnum
+
 DEFAULT_TEMPERATURE = [0.1, 0.3, 0.7]
 np.random.seed(191989)
 
@@ -14,7 +16,7 @@ np.random.seed(191989)
 class Softmax:
     """ e-Greedy Policy Action
     """
-
+    POLICY_TYPE = PolicyEnum.SOFTMAX
     ACTION_REWARDS = None
     TEMPERATURES = DEFAULT_TEMPERATURE
     ACTIONS = None
@@ -23,7 +25,7 @@ class Softmax:
     TEMPERATURES_COUNT = 3
 
     def __init__(self, num, trials, temperatures=None):
-        """ Initialise a Softmax Decision-maker
+        """ Initialise a Softmax Policy
 
             :param num:                 Number of Bandits in use
             :param trials:              Number of Trials to run for

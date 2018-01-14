@@ -14,6 +14,8 @@ import pandas as pd
 from RLBook.nArmedBandit.Bandits import NArmBandit
 from RLBook.nArmedBandit.EGreedy import EGreedy
 from RLBook.nArmedBandit.Extras import MissingPolicyException, PolicyEnum
+from RLBook.nArmedBandit.LinearRewardInaction import LinearInaction
+from RLBook.nArmedBandit.LinearRewardPenalty import LinearPenalty
 from RLBook.nArmedBandit.Softmax import Softmax
 
 DEFAULT_TRIALS = 2000
@@ -35,7 +37,7 @@ class ModelEnvironment:
     POLICY_NAME = None
     POSITIVE_REWARDS = None
 
-    def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None):
+    def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None, alpha=None):
         """
 
             :param bandits:
@@ -61,14 +63,24 @@ class ModelEnvironment:
     def __repr__(self):
         return "< Modelling Environment Class >"
 
-    def policy_selection(self, policy, epsilons=None, temperatures=None):
+    def policy_selection(self, policy, epsilons=None, temperatures=None, alpha=None):
         """ Policy Selection
         """
         if policy == PolicyEnum.EGREEDY:
-            self.POLICY = EGreedy(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT, epsilon=epsilons)
+            self.POLICY = EGreedy(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                  epsilon=epsilons)
 
         elif policy == PolicyEnum.SOFTMAX:
-            self.POLICY = Softmax(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT, temperatures=temperatures)
+            self.POLICY = Softmax(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                  temperatures=temperatures)
+
+        elif policy == PolicyEnum.LINEAR_REWARD_PENALTY:
+            self.POLICY = LinearPenalty(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                        epsilon=epsilons, alpha=alpha)
+
+        elif policy == PolicyEnum.LINEAR_REWARD_INACTION:
+            self.POLICY = LinearInaction(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                         epsilon=epsilons, alpha=alpha)
 
         else:
             raise NotImplementedError

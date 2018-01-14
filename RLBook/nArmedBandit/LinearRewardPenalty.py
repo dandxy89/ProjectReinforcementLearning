@@ -1,8 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.eGreedy
+""" RLBook.nArmedBandit.LinearRewardPenalty
 
-*   From: 2.2
+*   From: 2.4
 
 """
 import numpy as np
@@ -10,31 +10,36 @@ import numpy as np
 from RLBook.nArmedBandit.Extras import PolicyEnum
 
 DEFAULT_EPSILON = [0, 0.01, 0.1]
+DEFAULT_ALPHA = 0.1
 np.random.seed(191989)
 
 
-class EGreedy:
-    """ e-Greedy Policy Action
+class LinearPenalty:
+    """ Linear, reward-penalty Policy Action
     """
-    POLICY_TYPE = PolicyEnum.EGREEDY
+    POLICY_TYPE = PolicyEnum.LINEAR_REWARD_PENALTY
     ACTION_REWARDS = None
     EPSILON = DEFAULT_EPSILON
     ACTIONS = None
     BANDITS = 1
     TRIAL_COUNT = 1
     EPSILON_COUNT = 3
+    ALPHA = DEFAULT_ALPHA
 
-    def __init__(self, num, trials, epsilon=None):
-        """ Initialise a e-Greedy Policy
+    def __init__(self, num, trials, epsilon=None, alpha=DEFAULT_ALPHA):
+        """ Initialise a Linear, reward-penalty Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
             :param epsilon:     List of Epsilons
+            :param alpha:       Set 'alpha'
 
         """
         # params:
         self.N_BANDITS = num
         self.TRIAL_COUNT = trials
+        if alpha != DEFAULT_ALPHA and alpha is not None:
+            self.ALPHA = alpha
 
         # Using alternative epsilons
         if epsilon is not None:
@@ -120,13 +125,18 @@ class EGreedy:
     def update_reward(self, index, action, reward):
         """ Update a specific Reward Value
 
+            INFO:
+
+                Changed update rule
+
             :param index:
             :param action:
             :param reward:
             :return:
 
         """
-        self.ACTION_REWARDS[action, index] += reward
+        current = self.ACTION_REWARDS[action, index]
+        self.ACTION_REWARDS[action, index] += current + self.ALPHA * (reward - current)
 
     def update_rewards(self, rewards):
         """ Update all the Temperature Reward values
