@@ -38,7 +38,8 @@ class ModelEnvironment:
     POSITIVE_REWARDS = None
     IS_BINARY = False
 
-    def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None, alpha=None):
+    def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None, alpha=None,
+                 probability=0.4):
         """
 
             :param bandits:
@@ -62,7 +63,8 @@ class ModelEnvironment:
         # Initialise a multi-Armed Bandit
         self.IS_BINARY = True if self.POLICY_NAME in PolicyEnum.BINARY_POLICIES else False
         self.BANDIT = NArmBandit(num=bandits,
-                                 binary=self.IS_BINARY)
+                                 binary=self.IS_BINARY,
+                                 probability=probability)
 
     def __repr__(self):
         return "< Modelling Environment Class >"

@@ -18,8 +18,8 @@ from RLBook.nArmedBandit.ModellingEnvironment import ModelEnvironment
 
 if __name__ == '__main__':
     # params:
-    bandits = 10
-    trials = 20000
+    bandits = 1
+    trials = 2000
 
     # Initialise a e-Greedy Environment
     # env1 = ModelEnvironment(trials=trials, bandits=bandits, policy=PolicyEnum.EGREEDY,
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     # Initialise a Linear, reward-inaction Policy
     env4 = ModelEnvironment(trials=trials, bandits=bandits, policy=PolicyEnum.LINEAR_REWARD_INACTION,
-                            epsilons=[0, 0.1, 0.5, 0.75], alpha=0.1)
+                            epsilons=[0, 0.1, 0.5, 0.75], alpha=0.1, probability=0.2)
     env4.run()
     env4.print_results()
     env4.generate_charts()

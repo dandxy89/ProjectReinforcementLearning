@@ -35,7 +35,7 @@ class NArmBandit:
     """ A collection of N slot machines. Slot machine i has a mean of i and sigma of N
     """
 
-    def __init__(self, num, binary=False):
+    def __init__(self, num, binary=False, probability=0.4):
         """ Initialise a num-Armed Bandit
 
             :param num:         Number of Bandits to create
@@ -49,7 +49,7 @@ class NArmBandit:
         for bandit_n in range(num):
             if binary:
                 # Binary Bandit
-                self.bandits[bandit_n] = OneArmBinaryBandit()
+                self.bandits[bandit_n] = OneArmBinaryBandit(probability=probability)
             else:
                 # Gaussian Normal Bandit
                 self.bandits[bandit_n] = OneArmBandit(mu=bandit_n, sigma=num)
@@ -79,9 +79,17 @@ class NArmBandit:
 
 
 class OneArmBinaryBandit:
+    """ Binary One Arm Bandit
+    """
+    PROBABILITY = 0.4
 
-    def __init__(self):
-        pass
+    def __init__(self, probability=0.4):
+        """ TODO
+
+            :param probability:     TODO
+
+        """
+        self.PROBABILITY = probability
 
     def __str__(self):
         return "< One Arm Binary Bandit >"
@@ -90,4 +98,4 @@ class OneArmBinaryBandit:
         return "< One Arm Binary Bandit >"
 
     def draw(self):
-        return np.random.choice([0, 1], size=1)
+        return np.random.choice([0, 1], size=1, p=[self.PROBABILITY, 1 - self.PROBABILITY])
