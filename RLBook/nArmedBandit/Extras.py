@@ -26,6 +26,7 @@ class PolicyEnum:
     LINEAR_REWARD_PENALTY = "Linear, reward-penalty"
     LINEAR_REWARD_INACTION = "Linear, reward-inaction"
     BINARY_POLICIES = [LINEAR_REWARD_INACTION, LINEAR_REWARD_PENALTY]
+    INCREMENTAL = "Incremental"
 
     def __repr__(self):
         return "< Policy Enum >"

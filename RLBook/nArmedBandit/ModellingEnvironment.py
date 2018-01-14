@@ -14,6 +14,7 @@ import pandas as pd
 from RLBook.nArmedBandit.Bandits import NArmBandit
 from RLBook.nArmedBandit.EGreedy import EGreedy
 from RLBook.nArmedBandit.Extras import MissingPolicyException, PolicyEnum
+from RLBook.nArmedBandit.Incremental import Incremental
 from RLBook.nArmedBandit.LinearRewardInaction import LinearInaction
 from RLBook.nArmedBandit.LinearRewardPenalty import LinearPenalty
 from RLBook.nArmedBandit.Softmax import Softmax
@@ -88,6 +89,10 @@ class ModelEnvironment:
             self.POLICY = LinearInaction(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
                                          epsilon=epsilons, alpha=alpha)
 
+        elif policy == PolicyEnum.INCREMENTAL:
+            self.POLICY = Incremental(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                      epsilon=epsilons, alpha=alpha)
+
         else:
             raise NotImplementedError
 
@@ -111,7 +116,7 @@ class ModelEnvironment:
             self.POLICY.update_rewards(rewards=rewards)
 
     def print_results(self):
-        """ TODO
+        """ Display Results in the Console
         """
         # Positive Rewards
         self.POLICY.show_settings()
@@ -156,7 +161,6 @@ class ModelEnvironment:
 
             plt.figure()
             average_reward.plot(x='t')
-            plt.ylim((0, 10))
             plt.title("{} - Average Reward (positive reward received).".format(self.POLICY_NAME))
             plt.ylabel("Average Reward at t")
             plt.savefig("Plots/{}_Average_Reward.png".format(self.POLICY_NAME))
