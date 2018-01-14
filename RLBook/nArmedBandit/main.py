@@ -15,6 +15,12 @@ Testable so far:
 *   Linear, reward-inaction
 *   Incremental
 
+TODO:
+
+*   Non-stationary
+*   Optimistic Initial Values
+*   Pursuit
+
 """
 
 if __name__ == '__main__':
