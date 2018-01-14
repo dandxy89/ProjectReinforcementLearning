@@ -17,7 +17,7 @@ class OneArmBandit:
     """ A single slot machine
     """
 
-    def __init__(self, mu, sigma):
+    def __init__(self, mu=0, sigma=1):
         logger.debug("One Arm Bandit w Mean {mu} - Std {sigma}".format(mu=mu, sigma=sigma))
         self.mu, self.sigma = mu, sigma
 

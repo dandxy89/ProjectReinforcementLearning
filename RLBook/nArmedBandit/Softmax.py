@@ -12,7 +12,7 @@ np.random.seed(191989)
 
 
 class Softmax:
-    """ e-Greedy Action Decision-making
+    """ e-Greedy Policy Action
     """
 
     ACTION_REWARDS = None
@@ -25,9 +25,9 @@ class Softmax:
     def __init__(self, num, trials, temperatures=None):
         """ Initialise a Softmax Decision-maker
 
-            :param num:         Number of Bandits in use
-            :param trials:      Number of Trials to run for
-            :param epsilon:     List of Epsilons
+            :param num:                 Number of Bandits in use
+            :param trials:              Number of Trials to run for
+            :param temperatures:        List of Epsilons
 
         """
         # params:
@@ -54,35 +54,57 @@ class Softmax:
     def count_temperatures(self):
         self.TEMPERATURES_COUNT = len(self.TEMPERATURES)
 
-    def random_action(self):
-        return np.random.randint(self.N_BANDITS, size=1)
+    @staticmethod
+    @np.vectorize
+    def softmax_exp(a, temperature):
+        """ Vectorized Exponential from the Softmax function
 
-    def get_value(self, a, index):
-        return np.nan_to_num(self.ACTION_REWARDS[a, index] / self.ACTION_COUNTS[a, index])
+            :param a:
+            :param temperature:
+            :return:
 
-    def softmax_exp(self, a, temperature, index):
-        return np.exp(self.get_value(a=a, index=index) / temperature)
-
-    def boltzmann_distribution(self, action, temperature, index):
-        return self.softmax_exp(action, temperature, index=index) / sum(
-            [self.softmax_exp(a=a, temperature=temperature, index=index) for a in range(self.N_BANDITS)])
+        """
+        return np.exp(a / temperature)
 
     def update_count(self, index, action):
+        """ Increasing the Action count by 1
+
+            :param index:
+            :param action:
+            :return:
+
+        """
         self.ACTION_COUNTS[action, index] += 1
 
     def record_action(self, time, index, action):
+        """ Record the Chosen action at time t
+
+            :param time:
+            :param index:
+            :param action:
+            :return:
+
+        """
         self.ACTIONS[time, index] = action
 
     def take_action(self, time):
+        """ Take an action for each Setting at time t
+
+            :param time:
+            :return:
+
+        """
         actions = []
         for index, temperature in enumerate(self.TEMPERATURES):
             # Boltzmann Distribution
             choices = [a for a in range(self.N_BANDITS)]
-            p = [self.boltzmann_distribution(action=a, temperature=temperature, index=index)
-                 for a in range(self.N_BANDITS)]
+
+            # Current Rewards
+            boltz = self.softmax_exp(a=np.nan_to_num(self.ACTION_REWARDS[:, index] / self.ACTION_COUNTS[:, index]),
+                                     temperature=temperature)
 
             # Select an Action
-            action = np.random.choice(choices, p=p)
+            action = np.random.choice(choices, p=boltz / boltz.sum())
 
             # Update the Count
             self.update_count(action=action, index=index)
@@ -92,8 +114,25 @@ class Softmax:
         return actions
 
     def update_reward(self, index, action, reward):
+        """ Update a specific Reward Value
+
+            :param index:
+            :param action:
+            :param reward:
+            :return:
+
+        """
         self.ACTION_REWARDS[action, index] += reward
 
     def update_rewards(self, rewards):
+        """ Update all the Temperature Reward values
+
+            :param rewards:
+            :return:
+
+        """
         for index, (action, reward) in enumerate(rewards):
             self.update_reward(index=index, action=action, reward=reward)
+
+    def show_settings(self):
+        print(self.TEMPERATURES)
