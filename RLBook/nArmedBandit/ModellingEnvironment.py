@@ -101,7 +101,7 @@ class ModelEnvironment:
         """
         for each_trial in range(self.TRIAL_COUNT):
             logger.debug("Running Trial: {}".format(each_trial + 1))
-            if each_trial % 100 == 0:
+            if each_trial % 1000 == 0:
                 logger.info("Running Trial: {}".format(each_trial + 1))
 
             # Get the Actions
@@ -122,6 +122,7 @@ class ModelEnvironment:
         self.POLICY.show_settings()
         self.POSITIVE_REWARDS = np.array(self.ALL_REWARDS) > 0
         print("Positive Rewards Achieved: ", self.POSITIVE_REWARDS.sum(axis=0))
+        print("Positive Rewards Achieved (%): ", self.POSITIVE_REWARDS.sum(axis=0) / self.TRIAL_COUNT)
 
         # Show Weightings
         print("Show Weightings: ")

@@ -57,10 +57,10 @@ if __name__ == '__main__':
     # env4.print_results()
     # env4.generate_charts()
 
-    # Initialise a Linear, reward-inaction Policy
+    # Initialise a Incremental Policy
     # env5 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.INCREMENTAL,
-    #                         epsilons=[0, 0.001, 0.01, 0.1], alpha=0.07)
+    #                         epsilons=[0, 0.001, 0.01, 0.1, 0.2])
     # env5.run()
     # env5.print_results()
     # env5.generate_charts()
-    # MAX: 16099
+    # MAX: 16191
