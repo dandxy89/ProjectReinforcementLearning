@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """ RLBook.nArmedBandit.Bandits
 
-- 1-Arm Bandit
-- n-Armed Bandit
+*   1-Arm Bandit
+*   n-Armed Bandit
+*   Binary Bandit
 
 """
 import logging
