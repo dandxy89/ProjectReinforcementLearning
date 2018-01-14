@@ -36,6 +36,7 @@ class ModelEnvironment:
     ALL_REWARDS = []
     POLICY_NAME = None
     POSITIVE_REWARDS = None
+    IS_BINARY = False
 
     def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None, alpha=None):
         """
@@ -55,10 +56,13 @@ class ModelEnvironment:
             raise MissingPolicyException("Choose a Policy method!")
         else:
             self.POLICY_NAME = policy
-            self.policy_selection(policy=policy, epsilons=epsilons, temperatures=temperatures)
+            self.policy_selection(policy=policy, epsilons=epsilons, temperatures=temperatures,
+                                  alpha=alpha)
 
         # Initialise a multi-Armed Bandit
-        self.BANDIT = NArmBandit(num=bandits)
+        self.IS_BINARY = True if self.POLICY_NAME in PolicyEnum.BINARY_POLICIES else False
+        self.BANDIT = NArmBandit(num=bandits,
+                                 binary=self.IS_BINARY)
 
     def __repr__(self):
         return "< Modelling Environment Class >"
@@ -121,6 +125,10 @@ class ModelEnvironment:
         """
         import matplotlib.pyplot as plt
 
+        if len(self.POSITIVE_REWARDS.shape) == 3:
+            shape = self.POSITIVE_REWARDS.shape
+            self.POSITIVE_REWARDS = self.POSITIVE_REWARDS.reshape((shape[0], shape[1]))
+
         cum_vals = np.cumsum(self.POSITIVE_REWARDS * 1, axis=0)
         rng = np.arange(start=1, stop=cum_vals.shape[0] + 1)
         optimal_results = pd.DataFrame(data=cum_vals / np.tile(rng, (len(self.POLICY.show_settings(p=False)), 1)).T,
@@ -134,21 +142,22 @@ class ModelEnvironment:
         plt.ylabel("Optimal Action at t")
         plt.savefig("Plots/{}_Optimal_Action.png".format(self.POLICY_NAME))
 
-        # Average Reward
-        average_reward = pd.DataFrame(data=np.array(self.ALL_REWARDS),
-                                      columns=[str(x) for x in self.POLICY.show_settings(p=False)])
-        cols = average_reward.columns
-        average_reward["t"] = average_reward.index + 1
-        for each_column in cols:
-            average_reward.loc[:, each_column] = average_reward.loc[:, each_column].cumsum() / average_reward.loc[:,
-                                                                                               "t"]
+        if not self.IS_BINARY:
+            # Average Reward
+            average_reward = pd.DataFrame(data=np.array(self.ALL_REWARDS),
+                                          columns=[str(x) for x in self.POLICY.show_settings(p=False)])
+            cols = average_reward.columns
+            average_reward["t"] = average_reward.index + 1
+            for each_column in cols:
+                average_reward.loc[:, each_column] = average_reward.loc[:, each_column].cumsum() / average_reward.loc[:,
+                                                                                                   "t"]
 
-        plt.figure()
-        average_reward.plot(x='t')
-        plt.ylim((0, 10))
-        plt.title("{} - Average Reward (positive reward received).".format(self.POLICY_NAME))
-        plt.ylabel("Average Reward at t")
-        plt.savefig("Plots/{}_Average_Reward.png".format(self.POLICY_NAME))
+            plt.figure()
+            average_reward.plot(x='t')
+            plt.ylim((0, 10))
+            plt.title("{} - Average Reward (positive reward received).".format(self.POLICY_NAME))
+            plt.ylabel("Average Reward at t")
+            plt.savefig("Plots/{}_Average_Reward.png".format(self.POLICY_NAME))
 
     def save(self):
         """ TODO

@@ -140,7 +140,7 @@ class LinearPenalty:
 
         """
         current = self.ACTION_REWARDS[action, index]
-        self.ACTION_REWARDS[action, index] += current + self.ALPHA * (reward - current)
+        self.ACTION_REWARDS[action, index] += current + self.ALPHA * (1 - current)
 
     def update_rewards(self, rewards):
         """ Update all the Temperature Reward values
