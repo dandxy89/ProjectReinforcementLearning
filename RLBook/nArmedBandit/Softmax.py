@@ -134,5 +134,7 @@ class Softmax:
         for index, (action, reward) in enumerate(rewards):
             self.update_reward(index=index, action=action, reward=reward)
 
-    def show_settings(self):
-        print(self.TEMPERATURES)
+    def show_settings(self, p=True):
+        if p:
+            print(self.TEMPERATURES)
+        return self.TEMPERATURES

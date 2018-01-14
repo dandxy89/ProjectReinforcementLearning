@@ -9,6 +9,7 @@
 import logging
 
 import numpy as np
+import pandas as pd
 
 from RLBook.nArmedBandit.Bandits import NArmBandit
 from RLBook.nArmedBandit.EGreedy import EGreedy
@@ -32,6 +33,7 @@ class ModelEnvironment:
     BANDIT = None
     ALL_REWARDS = []
     POLICY_NAME = None
+    POSITIVE_REWARDS = None
 
     def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None):
         """
@@ -95,16 +97,46 @@ class ModelEnvironment:
         """
         # Positive Rewards
         self.POLICY.show_settings()
-        print("Positive Rewards: ", (np.array(self.ALL_REWARDS) > 0).sum(axis=0))
+        self.POSITIVE_REWARDS = np.array(self.ALL_REWARDS) > 0
+        print("Positive Rewards Achieved: ", self.POSITIVE_REWARDS.sum(axis=0))
 
         # Show Weightings
         print("Show Weightings: ")
         print(np.nan_to_num(self.POLICY.ACTION_REWARDS / self.POLICY.ACTION_COUNTS))
 
     def generate_charts(self):
-        """ TODO
+        """ Generating the Charts
         """
-        raise NotImplementedError
+        import matplotlib.pyplot as plt
+
+        cum_vals = np.cumsum(self.POSITIVE_REWARDS * 1, axis=0)
+        rng = np.arange(start=1, stop=cum_vals.shape[0] + 1)
+        optimal_results = pd.DataFrame(data=cum_vals / np.tile(rng, (len(self.POLICY.show_settings(p=False)), 1)).T,
+                                       columns=[str(x) for x in self.POLICY.show_settings(p=False)])
+        optimal_results["t"] = optimal_results.index + 1
+
+        # Optimal Action Selection
+        plt.figure()
+        optimal_results.plot(x='t')
+        plt.title("{} - Optimal Action (positive reward received).".format(self.POLICY_NAME))
+        plt.ylabel("Optimal Action at t")
+        plt.savefig("Plots/{}_Optimal_Action.png".format(self.POLICY_NAME))
+
+        # Average Reward
+        average_reward = pd.DataFrame(data=np.array(self.ALL_REWARDS),
+                                      columns=[str(x) for x in self.POLICY.show_settings(p=False)])
+        cols = average_reward.columns
+        average_reward["t"] = average_reward.index + 1
+        for each_column in cols:
+            average_reward.loc[:, each_column] = average_reward.loc[:, each_column].cumsum() / average_reward.loc[:,
+                                                                                               "t"]
+
+        plt.figure()
+        average_reward.plot(x='t')
+        plt.ylim((0, 10))
+        plt.title("{} - Average Reward (positive reward received).".format(self.POLICY_NAME))
+        plt.ylabel("Average Reward at t")
+        plt.savefig("Plots/{}_Average_Reward.png".format(self.POLICY_NAME))
 
     def save(self):
         """ TODO
@@ -118,21 +150,17 @@ if __name__ == '__main__':
     trials = 20000
 
     # Initialise a e-Greedy Environment
-    # env1 = ModelEnvironment(trials=trials, bandits=bandits, policy=PolicyEnum.EGREEDY,
-    #                         epsilons=[0, 0.01, 0.1, 0.3, 0.5, 0.75, 0.95])
-    # env1.run()
-    # env1.print_results()
-    # @20000 trials:    Positive Rewards: [13147 15426 15981]
-    #                   Epsilon: [0, 0.01, 0.1]
-    # @20000 trials:    Positive Rewards: [10071 16223 15948 15031 14827 13704 13240]
-    #                   Epsilon: [0, 0.01, 0.1, 0.3, 0.5, 0.75, 0.95]
+    env1 = ModelEnvironment(trials=trials, bandits=bandits, policy=PolicyEnum.EGREEDY,
+                            epsilons=[0, 0.1, 0.5, 0.75])
+    env1.run()
+    env1.print_results()
+    env1.generate_charts()
+    # Positive Rewards Achieved:  [11566 15962 14627 13938]
 
     # Initialise a Softmax Environment
-    env2 = ModelEnvironment(trials=trials, bandits=bandits, policy=PolicyEnum.SOFTMAX,
-                            temperatures=[0.0000000000001, 0.01, 0.1, 0.3, 0.5, 0.75, 0.95])
-    env2.run()
-    env2.print_results()
-    # @20000 trials:    Positive Rewards:  [13133 15778 16239]
-    #                   Temps [0.1, 0.3, 0.7]
-    # @20000 trials:    Positive Rewards: [ 9897  9948 12998 14534 15733 15485 16338]
-    #                   Temps [0.0000000000001, 0.01, 0.1, 0.3, 0.5, 0.75, 0.95]
+    # env2 = ModelEnvironment(trials=trials, bandits=bandits, policy=PolicyEnum.SOFTMAX,
+    #                         temperatures=[0.000001, 0.1, 0.5, 0.75])
+    # env2.run()
+    # env2.print_results()
+    # env2.generate_charts()
+    # [10095 15768 16248 15537]

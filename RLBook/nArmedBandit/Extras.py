@@ -21,8 +21,8 @@ class MissingPolicyException(Exception):
 class PolicyEnum:
     """
     """
-    EGREEDY = "e-greedy"
-    SOFTMAX = "softmax"
+    EGREEDY = "e-Greedy"
+    SOFTMAX = "Softmax"
 
     def __repr__(self):
         return "< Policy Enum >"
