@@ -4,6 +4,8 @@
 
 *   From: 2.4
 
+*   Technically this is for the Binary version
+
 """
 import numpy as np
 

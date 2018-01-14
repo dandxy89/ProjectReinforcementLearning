@@ -4,6 +4,10 @@
 
 *   From: 2.4
 
+Notes:
+
+*   Technically this is for the Binary version
+
 """
 import numpy as np
 
