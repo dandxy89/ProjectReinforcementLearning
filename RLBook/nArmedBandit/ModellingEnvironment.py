@@ -159,7 +159,7 @@ class ModelEnvironment:
         optimal_results.plot(x='t')
         plt.title("{} - Optimal Action (positive reward received).".format(self.POLICY_NAME))
         plt.ylabel("Optimal Action at t")
-        plt.savefig("Plots/{}_Optimal_Action.png".format(self.POLICY_NAME))
+        plt.savefig("Plots/nArmedBandit/{}_Optimal_Action.png".format(self.POLICY_NAME))
 
         if not self.IS_BINARY:
             # Average Reward
@@ -175,7 +175,7 @@ class ModelEnvironment:
             average_reward.plot(x='t')
             plt.title("{} - Average Reward (positive reward received).".format(self.POLICY_NAME))
             plt.ylabel("Average Reward at t")
-            plt.savefig("Plots/{}_Average_Reward.png".format(self.POLICY_NAME))
+            plt.savefig("Plots/nArmedBandit/{}_Average_Reward.png".format(self.POLICY_NAME))
 
     def save(self):
         """ TODO
