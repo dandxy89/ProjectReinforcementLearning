@@ -14,7 +14,7 @@ np.random.seed(191989)
 
 
 class Softmax:
-    """ e-Greedy Policy Action
+    """ Softmax Policy Agent
     """
     POLICY_TYPE = PolicyEnum.SOFTMAX
     ACTION_REWARDS = None
@@ -126,10 +126,11 @@ class Softmax:
         """
         self.ACTION_REWARDS[action, index] += reward
 
-    def update_rewards(self, rewards):
+    def update_rewards(self, rewards, time=None):
         """ Update all the Temperature Reward values
 
             :param rewards:
+            :param time:
             :return:
 
         """

@@ -22,10 +22,12 @@ TODO:
 *   Pursuit
 
 """
+from RLBook.nArmedBandit.Extras import PolicyEnum
+from RLBook.nArmedBandit.ModellingEnvironment import ModelEnvironment
 
 if __name__ == '__main__':
     # params:
-    trials = 20000
+    trials = 5000
 
     # Initialise a e-Greedy Environment
     # env1 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.EGREEDY,
@@ -64,3 +66,18 @@ if __name__ == '__main__':
     # env5.print_results()
     # env5.generate_charts()
     # MAX: 16191
+
+    # Initialise a Nonstationary Policy
+    env6 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.NON_STATIONARY,
+                            beta=0.1, epsilons=[0, 0.001, 0.01, 0.1, 0.2])
+    env6.run()
+    env6.print_results()
+    env6.generate_charts()
+    # MAX: TODO
+
+    # Initialise a Pursuit Policy
+    # env7 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.PURSUIT)
+    # env7.run()
+    # env7.print_results()
+    # env7.generate_charts()
+    # MAX: 12546

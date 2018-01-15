@@ -14,7 +14,7 @@ np.random.seed(191989)
 
 
 class EGreedy:
-    """ e-Greedy Policy Action
+    """ e-Greedy Policy Agent
     """
     POLICY_TYPE = PolicyEnum.EGREEDY
     ACTION_REWARDS = None
@@ -128,10 +128,11 @@ class EGreedy:
         """
         self.ACTION_REWARDS[action, index] += reward
 
-    def update_rewards(self, rewards):
+    def update_rewards(self, rewards, time=None):
         """ Update all the Temperature Reward values
 
             :param rewards:
+            :param time:
             :return:
 
         """

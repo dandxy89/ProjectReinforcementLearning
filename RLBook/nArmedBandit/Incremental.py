@@ -14,7 +14,7 @@ np.random.seed(191989)
 
 
 class Incremental:
-    """ Incremental Policy Action
+    """ Incremental Policy Agent
     """
     POLICY_TYPE = PolicyEnum.INCREMENTAL
     ACTION_REWARDS = None
@@ -26,7 +26,7 @@ class Incremental:
     ALPHA = None
 
     def __init__(self, num, trials, epsilon=None, alpha=None):
-        """ Initialise a e-Greedy Policy
+        """ Initialise a Incremental Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
@@ -131,13 +131,14 @@ class Incremental:
 
         """
         current = self.ACTION_REWARDS[action, index]
-        stepsize = self.ALPHA if self.ALPHA is not None else (1 / self.ACTION_COUNTS[action, index])
-        self.ACTION_REWARDS[action, index] = current + stepsize * (reward - current)
+        step_size = self.ALPHA if self.ALPHA is not None else (1 / self.ACTION_COUNTS[action, index])
+        self.ACTION_REWARDS[action, index] = current + step_size * (reward - current)
 
-    def update_rewards(self, rewards):
+    def update_rewards(self, rewards, time=None):
         """ Update all the Temperature Reward values
 
             :param rewards:
+            :param time:
             :return:
 
         """

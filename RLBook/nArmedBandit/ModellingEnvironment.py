@@ -17,6 +17,8 @@ from RLBook.nArmedBandit.Extras import MissingPolicyException, PolicyEnum
 from RLBook.nArmedBandit.Incremental import Incremental
 from RLBook.nArmedBandit.LinearRewardInaction import LinearInaction
 from RLBook.nArmedBandit.LinearRewardPenalty import LinearPenalty
+from RLBook.nArmedBandit.Nonstationary import Nonstationary
+from RLBook.nArmedBandit.Pursuit import Pursuit
 from RLBook.nArmedBandit.Softmax import Softmax
 
 DEFAULT_TRIALS = 2000
@@ -40,7 +42,7 @@ class ModelEnvironment:
     IS_BINARY = False
 
     def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None, alpha=None,
-                 probability=0.4):
+                 probability=0.4, beta=None):
         """
 
             :param bandits:
@@ -59,7 +61,7 @@ class ModelEnvironment:
         else:
             self.POLICY_NAME = policy
             self.policy_selection(policy=policy, epsilons=epsilons, temperatures=temperatures,
-                                  alpha=alpha)
+                                  alpha=alpha, beta=beta)
 
         # Initialise a multi-Armed Bandit
         self.IS_BINARY = True if self.POLICY_NAME in PolicyEnum.BINARY_POLICIES else False
@@ -70,7 +72,7 @@ class ModelEnvironment:
     def __repr__(self):
         return "< Modelling Environment Class >"
 
-    def policy_selection(self, policy, epsilons=None, temperatures=None, alpha=None):
+    def policy_selection(self, policy, epsilons=None, temperatures=None, alpha=None, beta=None):
         """ Policy Selection
         """
         if policy == PolicyEnum.EGREEDY:
@@ -93,6 +95,13 @@ class ModelEnvironment:
             self.POLICY = Incremental(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
                                       epsilon=epsilons, alpha=alpha)
 
+        elif policy == PolicyEnum.NON_STATIONARY:
+            self.POLICY = Nonstationary(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT)
+
+        elif policy == PolicyEnum.PURSUIT:
+            self.POLICY = Pursuit(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                  epsilon=epsilons, beta=beta)
+
         else:
             raise NotImplementedError
 
@@ -113,7 +122,7 @@ class ModelEnvironment:
             self.ALL_REWARDS.append(np.array([q for (p, q) in rewards]))
 
             # Update the Rewards
-            self.POLICY.update_rewards(rewards=rewards)
+            self.POLICY.update_rewards(rewards=rewards, time=each_trial)
 
     def print_results(self):
         """ Display Results in the Console
@@ -125,8 +134,10 @@ class ModelEnvironment:
         print("Positive Rewards Achieved (%): ", self.POSITIVE_REWARDS.sum(axis=0) / self.TRIAL_COUNT)
 
         # Show Weightings
-        print("Show Weightings: ")
-        print(np.nan_to_num(self.POLICY.ACTION_REWARDS / self.POLICY.ACTION_COUNTS))
+        try:
+            print("Show Weightings: {}".format(np.nan_to_num(self.POLICY.ACTION_REWARDS / self.POLICY.ACTION_COUNTS)))
+        except:
+            pass
 
     def generate_charts(self):
         """ Generating the Charts
