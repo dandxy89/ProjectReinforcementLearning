@@ -26,11 +26,10 @@ class GameState:
             :param columns:
 
         """
+        # Setup the Board
         self.BOARD_ROWS = rows
         self.BOARD_COLS = columns
-
         self.BOARD = np.zeros((self.BOARD_ROWS, self.BOARD_COLS))
-        self.end = None
 
     def __repr__(self):
         return "< TicTacToe [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
