@@ -91,6 +91,22 @@ class TestTicTacToe(unittest.TestCase):
         assert game_five.is_end_state()
         assert game_five.WINNER == 1
 
+    def test_check_draw(self):
+        game_six = GameState()
+        game_six.BOARD[0, 0] = 1
+        game_six.BOARD[1, 0] = 1
+        game_six.BOARD[2, 0] = -1
+        game_six.BOARD[0, 1] = -1
+        game_six.BOARD[1, 1] = -1
+        game_six.BOARD[2, 1] = 1
+        game_six.BOARD[0, 2] = 1
+        game_six.BOARD[1, 2] = -1
+        game_six.BOARD[2, 2] = -1
+
+        # Assertions
+        assert game_six.is_end_state()
+        assert game_six.WINNER == 0
+
 
 if __name__ == '__main__':
     unittest.main(testRunner=unittest.TextTestRunner())
