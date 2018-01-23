@@ -64,7 +64,8 @@ class TicTacToeEnvironment:
     def train(self):
         # For each Trial play a Game of Tic-Tac-Toe
         for each_trial in range(self.N_TRIALS):
-            logger.debug("Processing Game: {}".format(each_trial))
+            if each_trial % 1000 == 0:
+                print("Processing Trial: {}".format(each_trial))
 
             # Play a Game until termination
             self.play_game()
@@ -86,18 +87,33 @@ class TicTacToeEnvironment:
         # Agent 1 Wins!
         if game.WINNER == 1:
             logger.debug("Agent 1 Wins!")
-            self.AGENT1.update_policy(state=game.get_state(), reward=game.REWARD_WIN, action=action)
+            self.AGENT1.append(state=game.get_state(), reward=game.REWARD_WIN, action=action)
+            self.AGENT1.update_policy()
+
+            self.AGENT2.append(state=game.get_state(), reward=game.REWARD_LOSS, action=action)
+            self.AGENT2.update_policy()
 
         # Agent 2 Wins!
         elif game.WINNER == -1:
             logger.debug("Agent 2 Wins!")
-            self.AGENT2.update_policy(state=game.get_state(), reward=game.REWARD_WIN, action=action)
+            self.AGENT2.append(state=game.get_state(), reward=game.REWARD_WIN, action=action)
+            self.AGENT2.update_policy()
+
+            self.AGENT1.append(state=game.get_state(), reward=game.REWARD_LOSS, action=action)
+            self.AGENT1.update_policy()
 
         # Agent 1 and Agent 2 draw!
         else:
             logger.debug("Agent 1 and Agent 2 draw!")
-            self.AGENT2.update_policy(state=game.get_state(), reward=game.REWARD_DRAW, action=action)
-            self.AGENT1.update_policy(state=game.get_state(), reward=game.REWARD_DRAW, action=action)
+            self.AGENT2.append(state=game.get_state(), reward=game.REWARD_DRAW, action=action)
+            self.AGENT2.update_policy()
+
+            self.AGENT1.append(state=game.get_state(), reward=game.REWARD_DRAW, action=action)
+            self.AGENT1.update_policy()
+
+        # Reset the Agent Storage
+        self.AGENT1.reset()
+        self.AGENT2.reset()
 
     def play_game(self):
         in_progress = True
@@ -125,9 +141,7 @@ class TicTacToeEnvironment:
                 self.SCORES[game.WINNER] += 1
             else:
                 # Update the Reward
-                active_gamer.update_policy(state=game.get_state(),
-                                           action=action,
-                                           reward=game.REWARD_IN_PROGRESS)
+                active_gamer.append(state=game.get_state(), action=action, reward=game.REWARD_IN_PROGRESS)
 
             # Switch to the Other Player
             active_gamer = self.switch_role(id=active_gamer.ID)

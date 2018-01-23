@@ -8,16 +8,16 @@ import numpy as np
 from RLBook.Utils.PolicyTypes import PolicyEnum
 
 
-class RLAgent:
+class RLAgent2:
     """ Simple Epsilon Greedy Agent
     """
     POLICY_TYPE = PolicyEnum.EGREEDY
     EPSILON = 0.7
-    ID = 1
+    ID = 2
     ACTION = None
     POLICY = dict()
     STEP_SIZE = 0.6
-    GAMMA = 0.4
+    GAMMA = 0.7
     STORAGE = []
     UPDATE = True
 
