@@ -9,7 +9,7 @@
 """
 import numpy as np
 
-from RLBook.nArmedBandit.Extras import PolicyEnum
+from RLBook.Utils.PolicyTypes import PolicyEnum
 
 DEFAULT_EPSILON = [0, 0.01, 0.1]
 DEFAULT_ALPHA = 0.1

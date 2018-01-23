@@ -22,7 +22,7 @@ TODO:
 *   Pursuit
 
 """
-from RLBook.nArmedBandit.Extras import PolicyEnum
+from RLBook.Utils.PolicyTypes import PolicyEnum
 from RLBook.nArmedBandit.ModellingEnvironment import ModelEnvironment
 
 if __name__ == '__main__':

@@ -8,13 +8,16 @@ BOARD_ROWS = 3
 BOARD_COLS = 3
 
 
-class GameState:
+class TicTacToeGame:
     """ TicTacToe Implementation
     """
     BOARD_ROWS = BOARD_ROWS
     BOARD_COLS = BOARD_COLS
     WINNER = None
     BOARD = None
+    REWARD_WIN = 1.0
+    REWARD_DRAW = 0.3
+    REWARD_IN_PROGRESS = 0.1
 
     def __init__(self, rows=BOARD_ROWS, columns=BOARD_COLS):
         """ Initialise the Game of TicTacToe.
@@ -32,6 +35,9 @@ class GameState:
         self.BOARD = np.zeros((self.BOARD_ROWS, self.BOARD_COLS))
 
     def __repr__(self):
+        return "< TicTacToe [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
+
+    def __str__(self):
         return "< TicTacToe [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
 
     @staticmethod
@@ -82,8 +88,13 @@ class GameState:
 
     def get_state(self):
         """ Get the current state of the Board
+
+            Raw Numpy or List cannot be stored in a dictionary... un-hashable
+
         """
-        return self.BOARD.flatten()
+        a = self.BOARD.flatten()
+        a = a.astype(int)
+        return str(a.tolist())
 
     def display(self):
         print(self.BOARD)
@@ -115,3 +126,6 @@ class GameState:
         # Other State where there is neither a Winner or a Draw
         else:
             return False
+
+    def update_board(self, action, value):
+        self.BOARD.itemset(action, value)

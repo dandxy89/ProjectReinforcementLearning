@@ -7,7 +7,7 @@
 """
 import numpy as np
 
-from RLBook.nArmedBandit.Extras import PolicyEnum
+from RLBook.Utils.PolicyTypes import PolicyEnum
 
 DEFAULT_TEMPERATURE = [0.1, 0.3, 0.7]
 np.random.seed(191989)

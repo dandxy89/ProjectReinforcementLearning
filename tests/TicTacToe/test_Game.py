@@ -6,7 +6,7 @@ import unittest
 
 import numpy as np
 
-from RLBook.TicTacToe.TicTacToe import GameState
+from RLBook.TicTacToe.TicTacToe import TicTacToeGame
 
 
 class TestTicTacToe(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestTicTacToe(unittest.TestCase):
         pass
 
     def test_initialise(self):
-        game_one = GameState()
+        game_one = TicTacToeGame()
 
         # Assertions
         self.assertEquals(game_one.BOARD.sum(), 0)
@@ -29,13 +29,13 @@ class TestTicTacToe(unittest.TestCase):
         self.assertEquals(game_one.BOARD_ROWS, 3)
 
     def test_getting_state(self):
-        game_two = GameState()
+        game_two = TicTacToeGame()
         game_two.BOARD[0, 0] = 1
 
         assert np.array_equal(game_two.get_state(), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0]))
 
     def test_check_row(self):
-        game_three = GameState()
+        game_three = TicTacToeGame()
         game_three.BOARD[0, 0] = 1
 
         # Should return False
@@ -50,7 +50,7 @@ class TestTicTacToe(unittest.TestCase):
         assert game_three.WINNER == 1
 
     def test_check_column(self):
-        game_four = GameState()
+        game_four = TicTacToeGame()
         game_four.BOARD[0, 0] = 1
 
         # Should return False
@@ -64,7 +64,7 @@ class TestTicTacToe(unittest.TestCase):
         assert game_four.WINNER == 1
 
     def test_check_diagonal(self):
-        game_five = GameState()
+        game_five = TicTacToeGame()
         game_five.BOARD[0, 0] = 1
 
         # Should return False
@@ -78,7 +78,7 @@ class TestTicTacToe(unittest.TestCase):
         assert game_five.WINNER == 1
 
     def test_check_opposite_diagonal(self):
-        game_five = GameState()
+        game_five = TicTacToeGame()
         game_five.BOARD[0, 2] = 1
 
         # Should return False
@@ -92,7 +92,7 @@ class TestTicTacToe(unittest.TestCase):
         assert game_five.WINNER == 1
 
     def test_check_draw(self):
-        game_six = GameState()
+        game_six = TicTacToeGame()
         game_six.BOARD[0, 0] = 1
         game_six.BOARD[1, 0] = 1
         game_six.BOARD[2, 0] = -1

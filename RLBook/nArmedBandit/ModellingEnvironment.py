@@ -11,9 +11,10 @@ import logging
 import numpy as np
 import pandas as pd
 
+from RLBook.Utils.Exceptions import MissingPolicyException
+from RLBook.Utils.PolicyTypes import PolicyEnum
 from RLBook.nArmedBandit.Bandits import NArmBandit
 from RLBook.nArmedBandit.EGreedy import EGreedy
-from RLBook.nArmedBandit.Extras import MissingPolicyException, PolicyEnum
 from RLBook.nArmedBandit.Incremental import Incremental
 from RLBook.nArmedBandit.LinearRewardInaction import LinearInaction
 from RLBook.nArmedBandit.LinearRewardPenalty import LinearPenalty
