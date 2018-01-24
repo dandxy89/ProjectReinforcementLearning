@@ -6,11 +6,11 @@ import unittest
 
 import numpy as np
 
-from RLBook.TicTacToe.TicTacToe import TicTacToeGame
+from RLBook.Chapter1.TicTacToe import TicTacToeGame
 
 
 class TestTicTacToe(unittest.TestCase):
-    """ Testing the TicTacToe Implementation
+    """ Testing the Chapter1 Implementation
     """
 
     def setUp(self):

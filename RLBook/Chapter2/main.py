@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.main
+""" RLBook.Chapter2.main
 
 *   Script for Running different experiments...
 
@@ -22,8 +22,8 @@ TODO:
 *   Pursuit
 
 """
+from RLBook.Chapter2.ModellingEnvironment import ModelEnvironment
 from RLBook.Utils.PolicyTypes import PolicyEnum
-from RLBook.nArmedBandit.ModellingEnvironment import ModelEnvironment
 
 if __name__ == '__main__':
     # params:

@@ -1,8 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.eGreedy
+""" RLBook.Chapter2.Incremental
 
-*   From: 2.2
+*   From: 2.5
 
 """
 import numpy as np
@@ -13,19 +13,20 @@ DEFAULT_EPSILON = [0, 0.01, 0.1]
 np.random.seed(191989)
 
 
-class EGreedy:
-    """ e-Greedy Policy Agent
+class Incremental:
+    """ Incremental Policy Agent
     """
-    POLICY_TYPE = PolicyEnum.EGREEDY
+    POLICY_TYPE = PolicyEnum.INCREMENTAL
     ACTION_REWARDS = None
     EPSILON = DEFAULT_EPSILON
     ACTIONS = None
     BANDITS = 1
     TRIAL_COUNT = 1
     EPSILON_COUNT = 3
+    ALPHA = None
 
-    def __init__(self, num, trials, epsilon=None):
-        """ Initialise a e-Greedy Policy
+    def __init__(self, num, trials, epsilon=None, alpha=None):
+        """ Initialise a Incremental Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
@@ -35,6 +36,9 @@ class EGreedy:
         # params:
         self.N_BANDITS = num
         self.TRIAL_COUNT = trials
+
+        if alpha is not None:
+            self.ALPHA = alpha
 
         # Using alternative epsilons
         if epsilon is not None:
@@ -73,7 +77,7 @@ class EGreedy:
             :return:
 
         """
-        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index] / self.ACTION_COUNTS[:, index]))
+        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index]))
 
     def update_count(self, index, action):
         """ Increase the Action Count when used and log the result
@@ -126,7 +130,9 @@ class EGreedy:
             :return:
 
         """
-        self.ACTION_REWARDS[action, index] += reward
+        current = self.ACTION_REWARDS[action, index]
+        step_size = self.ALPHA if self.ALPHA is not None else (1 / self.ACTION_COUNTS[action, index])
+        self.ACTION_REWARDS[action, index] = current + step_size * (reward - current)
 
     def update_rewards(self, rewards, time=None):
         """ Update all the Temperature Reward values

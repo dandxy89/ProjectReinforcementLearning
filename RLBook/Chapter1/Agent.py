@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" TicTacToe.Agent
+""" Chapter1.Agent
 """
 
 import numpy as np
 
-from RLBook.TicTacToe.RandomAgent import RLAgentRandom
+from RLBook.Chapter1.RandomAgent import RLAgentRandom
 from RLBook.Utils.PolicyTypes import PolicyEnum
 
 

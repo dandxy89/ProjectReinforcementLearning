@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.Extras
+""" RLBook.Chapter2.Extras
 """
 
 

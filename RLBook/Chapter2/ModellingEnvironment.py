@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.ModellingEnvironment
+""" RLBook.Chapter2.ModellingEnvironment
 
 *   Capture results
 *   Produce plots
@@ -11,16 +11,16 @@ import logging
 import numpy as np
 import pandas as pd
 
+from RLBook.Chapter2.Bandits import NArmBandit
+from RLBook.Chapter2.EGreedy import EGreedy
+from RLBook.Chapter2.Incremental import Incremental
+from RLBook.Chapter2.LinearRewardInaction import LinearInaction
+from RLBook.Chapter2.LinearRewardPenalty import LinearPenalty
+from RLBook.Chapter2.Nonstationary import Nonstationary
+from RLBook.Chapter2.Pursuit import Pursuit
+from RLBook.Chapter2.Softmax import Softmax
 from RLBook.Utils.Exceptions import MissingPolicyException
 from RLBook.Utils.PolicyTypes import PolicyEnum
-from RLBook.nArmedBandit.Bandits import NArmBandit
-from RLBook.nArmedBandit.EGreedy import EGreedy
-from RLBook.nArmedBandit.Incremental import Incremental
-from RLBook.nArmedBandit.LinearRewardInaction import LinearInaction
-from RLBook.nArmedBandit.LinearRewardPenalty import LinearPenalty
-from RLBook.nArmedBandit.Nonstationary import Nonstationary
-from RLBook.nArmedBandit.Pursuit import Pursuit
-from RLBook.nArmedBandit.Softmax import Softmax
 
 DEFAULT_TRIALS = 2000
 
@@ -160,7 +160,7 @@ class ModelEnvironment:
         optimal_results.plot(x='t')
         plt.title("{} - Optimal Action (positive reward received).".format(self.POLICY_NAME))
         plt.ylabel("Optimal Action at t")
-        plt.savefig("Plots/nArmedBandit/{}_Optimal_Action.png".format(self.POLICY_NAME))
+        plt.savefig("Plots/Chapter2/{}_Optimal_Action.png".format(self.POLICY_NAME))
 
         if not self.IS_BINARY:
             # Average Reward
@@ -176,7 +176,7 @@ class ModelEnvironment:
             average_reward.plot(x='t')
             plt.title("{} - Average Reward (positive reward received).".format(self.POLICY_NAME))
             plt.ylabel("Average Reward at t")
-            plt.savefig("Plots/nArmedBandit/{}_Average_Reward.png".format(self.POLICY_NAME))
+            plt.savefig("Plots/Chapter2/{}_Average_Reward.png".format(self.POLICY_NAME))
 
     def save(self):
         """ TODO

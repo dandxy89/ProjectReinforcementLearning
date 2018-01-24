@@ -1,8 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.Pursuit
+""" RLBook.Chapter2.eGreedy
 
-*   From: 2.9
+*   From: 2.2
 
 """
 import numpy as np
@@ -13,33 +13,28 @@ DEFAULT_EPSILON = [0, 0.01, 0.1]
 np.random.seed(191989)
 
 
-class Pursuit:
-    """ Pursuit Policy Agent
+class EGreedy:
+    """ e-Greedy Policy Agent
     """
-    POLICY_TYPE = PolicyEnum.INCREMENTAL
+    POLICY_TYPE = PolicyEnum.EGREEDY
     ACTION_REWARDS = None
     EPSILON = DEFAULT_EPSILON
     ACTIONS = None
     BANDITS = 1
     TRIAL_COUNT = 1
     EPSILON_COUNT = 3
-    BETA = None
 
-    def __init__(self, num, trials, epsilon=None, beta=None):
-        """ Initialise a Pursuit Policy
+    def __init__(self, num, trials, epsilon=None):
+        """ Initialise a e-Greedy Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
             :param epsilon:     List of Epsilons
-            :param beta:        Value of Beta
 
         """
         # params:
         self.N_BANDITS = num
         self.TRIAL_COUNT = trials
-
-        if beta is not None:
-            self.BETA = beta
 
         # Using alternative epsilons
         if epsilon is not None:
@@ -78,7 +73,7 @@ class Pursuit:
             :return:
 
         """
-        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index]))
+        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index] / self.ACTION_COUNTS[:, index]))
 
     def update_count(self, index, action):
         """ Increase the Action Count when used and log the result
@@ -131,15 +126,7 @@ class Pursuit:
             :return:
 
         """
-        current = self.ACTION_REWARDS[action, index]
-        step_size = self.BETA if self.BETA is not None else (1 / self.ACTION_COUNTS[action, index])
-
-        self.ACTION_REWARDS[action, index] = current + step_size * (1 - current)
-
-        rng = np.arange(self.N_BANDITS) != action
-        for item in rng:
-            current = self.ACTION_REWARDS[item, index]
-            self.ACTION_REWARDS[item, index] = current + step_size * (0 - current)
+        self.ACTION_REWARDS[action, index] += reward
 
     def update_rewards(self, rewards, time=None):
         """ Update all the Temperature Reward values

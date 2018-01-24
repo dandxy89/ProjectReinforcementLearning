@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" TicTacToe.Environment
+""" Chapter1.Environment
 """
 import logging
 import random
@@ -8,12 +8,12 @@ from collections import defaultdict
 
 import numpy as np
 
-from RLBook.TicTacToe.TicTacToe import TicTacToeGame
+from RLBook.Chapter1.TicTacToe import TicTacToeGame
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     datefmt="%Y-%m-%d %H:%M:%S")
-logger = logging.getLogger("TicTacToe")
+logger = logging.getLogger("Chapter1")
 
 
 class GameState:

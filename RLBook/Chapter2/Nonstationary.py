@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.Nonstationary
+""" RLBook.Chapter2.Nonstationary
 
 *   From: 2.6
 

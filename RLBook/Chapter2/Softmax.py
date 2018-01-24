@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.Softmax
+""" RLBook.Chapter2.Softmax
 
 *   From: 2.3
 

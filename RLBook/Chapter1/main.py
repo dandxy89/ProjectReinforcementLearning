@@ -1,13 +1,13 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" TicTacToe.main
+""" Chapter1.main
 """
 import pickle
 
-from RLBook.TicTacToe.Agent import RLAgent
-from RLBook.TicTacToe.Environment import TicTacToeEnvironment
-from RLBook.TicTacToe.RandomAgent import RLAgentRandom
-from RLBook.TicTacToe.TicTacToe import TicTacToeGame
+from RLBook.Chapter1.Agent import RLAgent
+from RLBook.Chapter1.Environment import TicTacToeEnvironment
+from RLBook.Chapter1.RandomAgent import RLAgentRandom
+from RLBook.Chapter1.TicTacToe import TicTacToeGame
 
 
 def trainer(trials):
@@ -19,7 +19,7 @@ def trainer(trials):
     env = TicTacToeEnvironment(agent_one=agent_one, agent_two=agent_two, trials=trials)
 
     # Using a pre-trained Agent by reading in said Pickle File
-    # with open('RLBook/TicTacToe/AGENT.pickle', 'rb') as handle:
+    # with open('RLBook/Chapter1/AGENT.pickle', 'rb') as handle:
     #     env.AGENT2 = pickle.load(handle)
     #     env.AGENT2.EPSILON = 0.4
     #     env.AGENT2.STEP_SIZE = 0.2
@@ -50,11 +50,11 @@ if __name__ == '__main__':
     env3.train()
 
     # Writing a Pickle
-    with open('RLBook/TicTacToe/AGENT.pickle', 'wb') as handle:
+    with open('RLBook/Chapter1/AGENT.pickle', 'wb') as handle:
         pickle.dump(env3.AGENT2, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # Read in said Pickle File
-    with open('RLBook/TicTacToe/AGENT.pickle', 'rb') as handle:
+    with open('RLBook/Chapter1/AGENT.pickle', 'rb') as handle:
         env3.AGENT2 = pickle.load(handle)
 
     # Human Interaction

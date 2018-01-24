@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" TicTacToe.Agent
+""" Chapter1.Agent
 """
 
 import numpy as np

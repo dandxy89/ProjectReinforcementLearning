@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.Bandits
+""" RLBook.Chapter2.Bandits
 
 *   1-Arm Bandit
 *   n-Armed Bandit

@@ -1,10 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.LinearRewardInaction
+""" RLBook.Chapter2.Pursuit
 
-*   From: 2.4
-
-*   Technically this is for the Binary version
+*   From: 2.9
 
 """
 import numpy as np
@@ -12,36 +10,36 @@ import numpy as np
 from RLBook.Utils.PolicyTypes import PolicyEnum
 
 DEFAULT_EPSILON = [0, 0.01, 0.1]
-DEFAULT_ALPHA = 0.1
 np.random.seed(191989)
 
 
-class LinearInaction:
-    """ Linear, reward-inaction Policy Action
+class Pursuit:
+    """ Pursuit Policy Agent
     """
-    POLICY_TYPE = PolicyEnum.LINEAR_REWARD_INACTION
+    POLICY_TYPE = PolicyEnum.INCREMENTAL
     ACTION_REWARDS = None
     EPSILON = DEFAULT_EPSILON
     ACTIONS = None
     BANDITS = 1
     TRIAL_COUNT = 1
     EPSILON_COUNT = 3
-    ALPHA = DEFAULT_ALPHA
+    BETA = None
 
-    def __init__(self, num, trials, epsilon=None, alpha=DEFAULT_ALPHA):
-        """ Initialise a Linear, reward-penalty Policy
+    def __init__(self, num, trials, epsilon=None, beta=None):
+        """ Initialise a Pursuit Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
             :param epsilon:     List of Epsilons
-            :param alpha:       Set 'alpha'
+            :param beta:        Value of Beta
 
         """
         # params:
         self.N_BANDITS = num
         self.TRIAL_COUNT = trials
-        if alpha != DEFAULT_ALPHA and alpha is not None:
-            self.ALPHA = alpha
+
+        if beta is not None:
+            self.BETA = beta
 
         # Using alternative epsilons
         if epsilon is not None:
@@ -80,7 +78,7 @@ class LinearInaction:
             :return:
 
         """
-        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index] / self.ACTION_COUNTS[:, index]))
+        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index]))
 
     def update_count(self, index, action):
         """ Increase the Action Count when used and log the result
@@ -127,24 +125,27 @@ class LinearInaction:
     def update_reward(self, index, action, reward):
         """ Update a specific Reward Value
 
-            INFO:
-
-                Changed update rule
-
             :param index:
             :param action:
             :param reward:
             :return:
 
         """
-        if reward > 0:
-            current = self.ACTION_REWARDS[action, index]
-            self.ACTION_REWARDS[action, index] = current + self.ALPHA * (1 - current)
+        current = self.ACTION_REWARDS[action, index]
+        step_size = self.BETA if self.BETA is not None else (1 / self.ACTION_COUNTS[action, index])
 
-    def update_rewards(self, rewards):
+        self.ACTION_REWARDS[action, index] = current + step_size * (1 - current)
+
+        rng = np.arange(self.N_BANDITS) != action
+        for item in rng:
+            current = self.ACTION_REWARDS[item, index]
+            self.ACTION_REWARDS[item, index] = current + step_size * (0 - current)
+
+    def update_rewards(self, rewards, time=None):
         """ Update all the Temperature Reward values
 
             :param rewards:
+            :param time:
             :return:
 
         """

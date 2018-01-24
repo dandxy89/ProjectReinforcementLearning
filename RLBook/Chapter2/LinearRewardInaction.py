@@ -1,8 +1,10 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.Incremental
+""" RLBook.Chapter2.LinearRewardInaction
 
-*   From: 2.5
+*   From: 2.4
+
+*   Technically this is for the Binary version
 
 """
 import numpy as np
@@ -10,34 +12,35 @@ import numpy as np
 from RLBook.Utils.PolicyTypes import PolicyEnum
 
 DEFAULT_EPSILON = [0, 0.01, 0.1]
+DEFAULT_ALPHA = 0.1
 np.random.seed(191989)
 
 
-class Incremental:
-    """ Incremental Policy Agent
+class LinearInaction:
+    """ Linear, reward-inaction Policy Action
     """
-    POLICY_TYPE = PolicyEnum.INCREMENTAL
+    POLICY_TYPE = PolicyEnum.LINEAR_REWARD_INACTION
     ACTION_REWARDS = None
     EPSILON = DEFAULT_EPSILON
     ACTIONS = None
     BANDITS = 1
     TRIAL_COUNT = 1
     EPSILON_COUNT = 3
-    ALPHA = None
+    ALPHA = DEFAULT_ALPHA
 
-    def __init__(self, num, trials, epsilon=None, alpha=None):
-        """ Initialise a Incremental Policy
+    def __init__(self, num, trials, epsilon=None, alpha=DEFAULT_ALPHA):
+        """ Initialise a Linear, reward-penalty Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
             :param epsilon:     List of Epsilons
+            :param alpha:       Set 'alpha'
 
         """
         # params:
         self.N_BANDITS = num
         self.TRIAL_COUNT = trials
-
-        if alpha is not None:
+        if alpha != DEFAULT_ALPHA and alpha is not None:
             self.ALPHA = alpha
 
         # Using alternative epsilons
@@ -77,7 +80,7 @@ class Incremental:
             :return:
 
         """
-        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index]))
+        return np.argmax(np.nan_to_num(self.ACTION_REWARDS[:, index] / self.ACTION_COUNTS[:, index]))
 
     def update_count(self, index, action):
         """ Increase the Action Count when used and log the result
@@ -124,21 +127,24 @@ class Incremental:
     def update_reward(self, index, action, reward):
         """ Update a specific Reward Value
 
+            INFO:
+
+                Changed update rule
+
             :param index:
             :param action:
             :param reward:
             :return:
 
         """
-        current = self.ACTION_REWARDS[action, index]
-        step_size = self.ALPHA if self.ALPHA is not None else (1 / self.ACTION_COUNTS[action, index])
-        self.ACTION_REWARDS[action, index] = current + step_size * (reward - current)
+        if reward > 0:
+            current = self.ACTION_REWARDS[action, index]
+            self.ACTION_REWARDS[action, index] = current + self.ALPHA * (1 - current)
 
-    def update_rewards(self, rewards, time=None):
+    def update_rewards(self, rewards):
         """ Update all the Temperature Reward values
 
             :param rewards:
-            :param time:
             :return:
 
         """

@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" TicTacToe.TicTacToe
+""" Chapter1.Chapter1
 """
 import numpy as np
 
@@ -9,7 +9,7 @@ BOARD_COLS = 3
 
 
 class TicTacToeGame:
-    """ TicTacToe Implementation
+    """ Chapter1 Implementation
     """
     BOARD_ROWS = BOARD_ROWS
     BOARD_COLS = BOARD_COLS
@@ -21,7 +21,7 @@ class TicTacToeGame:
     REWARD_IN_PROGRESS = 0
 
     def __init__(self, rows=BOARD_ROWS, columns=BOARD_COLS):
-        """ Initialise the Game of TicTacToe.
+        """ Initialise the Game of Chapter1.
 
             The Game can be represented by a cols * rows 2D array. For this model one player (starting) will be
             represented by 1 and the other player by -1, finally, 0 will represented unselected space.
@@ -36,10 +36,10 @@ class TicTacToeGame:
         self.BOARD = np.zeros((self.BOARD_ROWS, self.BOARD_COLS))
 
     def __repr__(self):
-        return "< TicTacToe [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
+        return "< Chapter1 [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
 
     def __str__(self):
-        return "< TicTacToe [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
+        return "< Chapter1 [{}, {}] >".format(self.BOARD_ROWS, self.BOARD_COLS)
 
     @staticmethod
     def check_line(array, axis=None):

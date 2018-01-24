@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" RLBook.nArmedBandit.LinearRewardPenalty
+""" RLBook.Chapter2.LinearRewardPenalty
 
 *   From: 2.4
 
