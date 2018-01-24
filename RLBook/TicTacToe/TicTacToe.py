@@ -16,9 +16,9 @@ class TicTacToeGame:
     WINNER = None
     BOARD = None
     REWARD_WIN = 1.0
-    REWARD_DRAW = 0.4
-    REWARD_LOSS = -1
-    REWARD_IN_PROGRESS = 0.05
+    REWARD_DRAW = 0.3
+    REWARD_LOSS = -1.0
+    REWARD_IN_PROGRESS = 0
 
     def __init__(self, rows=BOARD_ROWS, columns=BOARD_COLS):
         """ Initialise the Game of TicTacToe.

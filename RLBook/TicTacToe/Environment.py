@@ -62,11 +62,9 @@ class TicTacToeEnvironment:
         return "< Tic-Tac-Toe Modelling Environment >"
 
     def train(self):
+        from tqdm import tqdm
         # For each Trial play a Game of Tic-Tac-Toe
-        for each_trial in range(self.N_TRIALS):
-            if each_trial % 1000 == 0:
-                print("Processing Trial: {}".format(each_trial))
-
+        for each_trial in tqdm(range(self.N_TRIALS)):
             # Play a Game until termination
             self.play_game()
 
@@ -118,8 +116,7 @@ class TicTacToeEnvironment:
     def play_game(self):
         in_progress = True
         active_gamer = self.AGENT1 if random.random() < 0.5 else self.AGENT2
-        game = TicTacToeGame(columns=self.DEFAULT_BOARD[1],
-                             rows=self.DEFAULT_BOARD[0])
+        game = TicTacToeGame(columns=self.DEFAULT_BOARD[1], rows=self.DEFAULT_BOARD[0])
 
         # While there are available states continue playing!
         while in_progress:
@@ -131,17 +128,16 @@ class TicTacToeEnvironment:
 
             # Let the Agent take an action based on the state
             action = active_gamer.take_action(game_state, eligible_actions[0])
+            active_gamer.append(state=game_state, action=action, reward=game.REWARD_IN_PROGRESS)
 
             # Update the Board with the Desired Action
             game.update_board(action=action, value=active_gamer.ACTION)
 
+            # Check if the Game is complete...
             if game.is_end_state():
                 self.update_reward(game=game, action=action)
                 in_progress = False
                 self.SCORES[game.WINNER] += 1
-            else:
-                # Update the Reward
-                active_gamer.append(state=game.get_state(), action=action, reward=game.REWARD_IN_PROGRESS)
 
             # Switch to the Other Player
             active_gamer = self.switch_role(id=active_gamer.ID)

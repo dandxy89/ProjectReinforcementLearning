@@ -15,6 +15,7 @@ class PolicyEnum:
     BINARY_POLICIES = [LINEAR_REWARD_INACTION, LINEAR_REWARD_PENALTY, PURSUIT]
     INCREMENTAL = "Incremental"
     NON_STATIONARY = "Nonstationary"
+    RANDOM = "Random"
 
     def __repr__(self):
         return "< Policy Enum >"
