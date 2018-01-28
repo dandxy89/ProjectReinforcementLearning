@@ -27,7 +27,7 @@ from RLBook.Utils.PolicyTypes import PolicyEnum
 
 if __name__ == '__main__':
     # params:
-    trials = 5000
+    trials = 20000
 
     # Initialise a e-Greedy Environment
     # env1 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.EGREEDY,
@@ -68,12 +68,12 @@ if __name__ == '__main__':
     # MAX: 16191
 
     # Initialise a Nonstationary Policy
-    env6 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.NON_STATIONARY,
-                            beta=0.1, epsilons=[0, 0.001, 0.01, 0.1, 0.2])
-    env6.run()
-    env6.print_results()
-    env6.generate_charts()
-    # MAX: TODO
+    # env6 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.NON_STATIONARY,
+    #                         beta=0.1, epsilons=[0, 0.001, 0.01, 0.1, 0.2])
+    # env6.run()
+    # env6.print_results()
+    # env6.generate_charts()
+    # # MAX: TODO
 
     # Initialise a Pursuit Policy
     # env7 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.PURSUIT)
@@ -81,3 +81,11 @@ if __name__ == '__main__':
     # env7.print_results()
     # env7.generate_charts()
     # MAX: 12546
+
+    # Initialise the UCB variation
+    env6 = ModelEnvironment(trials=trials, bandits=10, policy=PolicyEnum.UCB,
+                            beta=0.1, epsilons=[0, 0.01, 0.09, 0.095, 0.6])
+    env6.run()
+    env6.print_results()
+    env6.generate_charts()
+    # MAX: 16019

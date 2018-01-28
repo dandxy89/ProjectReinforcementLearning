@@ -16,6 +16,7 @@ class PolicyEnum:
     INCREMENTAL = "Incremental"
     NON_STATIONARY = "Nonstationary"
     RANDOM = "Random"
+    UCB = "Upper Confidence Bound"
 
     def __repr__(self):
         return "< Policy Enum >"

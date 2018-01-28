@@ -13,6 +13,7 @@ import pandas as pd
 
 from RLBook.Chapter2.Bandits import NArmBandit
 from RLBook.Chapter2.EGreedy import EGreedy
+from RLBook.Chapter2.GradientBandit import GradientBandit
 from RLBook.Chapter2.Incremental import Incremental
 from RLBook.Chapter2.LinearRewardInaction import LinearInaction
 from RLBook.Chapter2.LinearRewardPenalty import LinearPenalty
@@ -43,7 +44,7 @@ class ModelEnvironment:
     IS_BINARY = False
 
     def __init__(self, bandits, trials=None, policy=None, epsilons=None, temperatures=None, alpha=None,
-                 probability=0.4, beta=None):
+                 probability=0.4, beta=None, c=None):
         """
 
             :param bandits:
@@ -62,7 +63,7 @@ class ModelEnvironment:
         else:
             self.POLICY_NAME = policy
             self.policy_selection(policy=policy, epsilons=epsilons, temperatures=temperatures,
-                                  alpha=alpha, beta=beta)
+                                  alpha=alpha, beta=beta, c=c)
 
         # Initialise a multi-Armed Bandit
         self.IS_BINARY = True if self.POLICY_NAME in PolicyEnum.BINARY_POLICIES else False
@@ -73,7 +74,7 @@ class ModelEnvironment:
     def __repr__(self):
         return "< Modelling Environment Class >"
 
-    def policy_selection(self, policy, epsilons=None, temperatures=None, alpha=None, beta=None):
+    def policy_selection(self, policy, epsilons=None, temperatures=None, alpha=None, beta=None, c=None):
         """ Policy Selection
         """
         if policy == PolicyEnum.EGREEDY:
@@ -102,6 +103,10 @@ class ModelEnvironment:
         elif policy == PolicyEnum.PURSUIT:
             self.POLICY = Pursuit(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
                                   epsilon=epsilons, beta=beta)
+
+        elif policy == PolicyEnum.UCB:
+            self.POLICY = GradientBandit(num=self.BANDIT_COUNT, trials=self.TRIAL_COUNT,
+                                         epsilon=epsilons, c=c)
 
         else:
             raise NotImplementedError
