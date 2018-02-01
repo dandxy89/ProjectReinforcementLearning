@@ -19,6 +19,7 @@ This folder contains all the functionality to train various Agents for the purpo
 *   [Nonstationary.py](RLBook/Chapter2/Nonstationary.py) - Non-stationary policy Agent
 *   [Pursuit.py](RLBook/Chapter2/Pursuit.py) - Pursuit policy Agent
 *   [Softmax.py](RLBook/Chapter2/Softmax.py) - Softmax policy Agent
+*   [GradientBandit.py](RLBook/Chapter2/GradientBandit.py) - Gradient policy Bandit (UCB)
 
 # Results
 

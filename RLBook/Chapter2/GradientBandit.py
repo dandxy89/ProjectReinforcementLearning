@@ -39,7 +39,7 @@ class GradientBandit:
     C = 2
 
     def __init__(self, num, trials, epsilon=None, c=None):
-        """ Initialise a e-Greedy Policy
+        """ Initialise a Gradient Bandit Policy
 
             :param num:         Number of Bandits in use
             :param trials:      Number of Trials to run for
