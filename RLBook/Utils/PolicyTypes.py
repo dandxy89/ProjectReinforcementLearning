@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 """ RLBook.Utils.PolicyTypes
 """
+from enum import Enum
 
 
-class PolicyEnum:
+class PolicyEnum(Enum):
     """ Policy Enumerator
     """
     EGREEDY = "e-Greedy"
@@ -17,6 +18,3 @@ class PolicyEnum:
     NON_STATIONARY = "Nonstationary"
     RANDOM = "Random"
     UCB = "Upper Confidence Bound"
-
-    def __repr__(self):
-        return "< Policy Enum >"

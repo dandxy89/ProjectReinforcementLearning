@@ -6,7 +6,7 @@
         chapters require in some form or another a 'rollout'.
 
 """
-import numpy as np
+from abc import ABCMeta, abstractclassmethod
 
 
 class BaseTreeNode(object):
@@ -15,6 +15,8 @@ class BaseTreeNode(object):
     PARENT = None
     CHILDREN = {}
     N_VISITS = 0
+
+    __metaclass__ = ABCMeta
 
     def __init__(self, parent, prior_p: float):
         """ Initialise the Tree with Parent and Prior Probability
@@ -26,19 +28,24 @@ class BaseTreeNode(object):
         self.PARENT = parent
         self.P = prior_p
 
-    def expand(self, action_priors: np.ndarray):
+    @abstractclassmethod
+    def expand(self, *args):
         pass
 
-    def select(self, c_puct: float):
+    @abstractclassmethod
+    def select(self, *args):
         pass
 
-    def update(self, leaf_value: float):
+    @abstractclassmethod
+    def update(self, *args):
         pass
 
-    def update_recursive(self, leaf_value):
+    @abstractclassmethod
+    def update_recursive(self, *args):
         pass
 
-    def get_value(self, c_puct: float):
+    @abstractclassmethod
+    def get_value(self, *args):
         pass
 
     def is_leaf(self) -> bool:

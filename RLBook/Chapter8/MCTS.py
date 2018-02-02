@@ -5,7 +5,6 @@
 
 """
 import copy
-from _ast import Tuple
 
 import numpy as np
 
@@ -65,7 +64,7 @@ class MCTS(object):
         # Update value and visit count of nodes in this traversal.
         node.update_recursive(-leaf_value)
 
-    def get_move_probs(self, state, temp: float = 1e-3) -> Tuple[int, np.ndarray]:
+    def get_move_probs(self, state, temp: float = 1e-3):
         """ Runs all playouts sequentially and returns the available actions and their corresponding probabilities
 
             :param state:       the current state, including both game state and the current player.

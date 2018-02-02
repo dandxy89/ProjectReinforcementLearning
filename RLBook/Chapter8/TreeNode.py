@@ -28,7 +28,7 @@ class TreeNode(BaseTreeNode):
             :param prior_p:
 
         """
-        super().__init__(parent=parent, prior_p=prior_p)
+        super(TreeNode, self).__init__(parent=parent, prior_p=prior_p)
 
     def expand(self, action_priors: np.ndarray):
         """ Expand tree by creating new children.
