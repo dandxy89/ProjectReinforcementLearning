@@ -42,7 +42,7 @@ class GridWorld:
             if k in self.ACCEPTED_ARGUMENTS:
                 self.__setattr__(k, kwargs[k])
 
-    def set_action_probailities(self, probs=DEFAULT_ACTION_PROB):
+    def set_action_probabilities(self, probs=DEFAULT_ACTION_PROB):
         """ Set the Action Probabilities
 
             :return:
@@ -62,7 +62,7 @@ class GridWorld:
 
         """
         if not self.SET_ACTION_PROB:
-            self.set_action_probailities()
+            self.set_action_probabilities()
 
         for i in range(0, self.WORLD_SIZE):
             self.NEXT_STATE.append([])
@@ -71,6 +71,7 @@ class GridWorld:
             for j in range(0, self.WORLD_SIZE):
                 next = dict()
                 reward = dict()
+
                 if i == 0:
                     next['U'] = [i, j]
                     reward['U'] = -1.0
@@ -172,12 +173,13 @@ class GridWorld:
 
         return world
 
-    def plot_mesh(self, world: np.ndarray, title: str, type: str):
+    @staticmethod
+    def plot_mesh(world: np.ndarray, title: str, file_name: str):
         """ Plot the Array as a Mesh with Matplotlib
 
             :param world:       Numpy Array
             :param title:       Chart title
-            :param type:        Name of the file
+            :param file_name:        Name of the file
 
         """
         plt.figure()
@@ -206,5 +208,5 @@ if __name__ == '__main__':
     pprint(value_iteration)
 
     # Save the Plots for review in the future...
-    env.plot_mesh(world=bellman_world, title="Bellman World", type="Bellman")
-    env.plot_mesh(world=value_iteration, title="Value Iteration World", type="ValueIteration")
+    env.plot_mesh(world=bellman_world, title="Bellman World", file_name="Bellman")
+    env.plot_mesh(world=value_iteration, title="Value Iteration World", file_name="ValueIteration")
