@@ -18,3 +18,4 @@ class PolicyEnum(Enum):
     NON_STATIONARY = "Nonstationary"
     RANDOM = "Random"
     UCB = "Upper Confidence Bound"
+    RESNET = "ResNet"

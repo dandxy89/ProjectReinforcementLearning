@@ -7,13 +7,16 @@
 """
 from abc import abstractclassmethod, ABCMeta
 
+from keras.models import model_from_json
+
 
 class NeuralNet:
     """ This class specifies the base NeuralNet class.
     """
     __metaclass__ = ABCMeta
+    model = None
 
-    def __init__(self, game):
+    def __init__(self):
         pass
 
     @abstractclassmethod
@@ -37,14 +40,24 @@ class NeuralNet:
         """
         pass
 
-    @abstractclassmethod
     def save_checkpoint(self, filename):
         """ Saves the current neural network (with its parameters) into a given filename
         """
-        pass
+        # serialize model to JSON
+        model_json = self.model.to_json()
+        with open('{}.json'.format(filename), "w") as json_file:
+            json_file.write(model_json)
 
-    @abstractclassmethod
+        # Serialize weights to HDF5
+        self.model.save_weights("{}.h5".format(filename))
+
     def load_checkpoint(self, filename):
         """ Loads parameters of the neural network from a given filename
         """
-        pass
+        with open('{}.json'.format(filename), 'r') as json_file:
+            loaded_model_json = json_file.read()
+
+        self.model = model_from_json(loaded_model_json)
+
+        # load weights into new model
+        self.model.load_weights("{}.h5".format(filename))

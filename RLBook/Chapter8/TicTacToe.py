@@ -1,7 +1,9 @@
-"""
-Tic Tac Toe game implementation
-"""
+# -*- coding: utf-8 -*-
+""" RLBook.Chapter8.TicTacToe
 
+Tic Tac Toe game implementation
+
+"""
 import logging
 from itertools import cycle
 
@@ -43,7 +45,13 @@ class Game:
                   (2, 2): 8}
 
     def __init__(self, board_size=3, save_history=True):
-        # game attributes
+        """
+
+            :param board_size:
+            :param save_history:
+
+        """
+        # Game attributes
         self.board_size = board_size
         self.state = np.zeros((board_size, board_size), dtype=int)
         self.save_history = save_history
@@ -58,10 +66,10 @@ class Game:
         self.current_player = next(self.players_gen)
 
     def __repr__(self):
-        return "< TTT > "
+        return "< TicTacToe > "
 
     def __str__(self):
-        return "< TTT > "
+        return "< TicTacToe > "
 
     def legal_plays(self):
         """ Takes a sequence of game states representing the full game history
@@ -126,7 +134,7 @@ class Game:
     def play(self, move=None):
         """ Play a move
 
-            :param move: selected move to play. If None it is chosen randomly amon legal plays
+            :param move: selected move to play. If None it is chosen randomly from legal plays
 
         """
         legal_plays = self.legal_plays()
@@ -141,18 +149,20 @@ class Game:
         else:
             selected_move = legal_plays[np.random.choice(len(legal_plays), 1)[0]]
 
-        # updates states and players info
+        # Updates states and players info
         self.state[selected_move] = self.current_player.value
         if self.save_history:
-            self.history.append(self.state.copy())  # copy() needed to avoid appending a reference
+            # Copy() needed to avoid appending a reference
+            self.history.append(self.state.copy())
 
+        # Only the current state is save (to be able to display it)
         else:
-            self.history = [self.state.copy()]  # only the current state is save (to be able to display it)
+            self.history = [self.state.copy()]
 
         self.current_player = next(self.players_gen)
         self.last_play = selected_move
 
-        # updates sums that are used to check for winner
+        # Updates sums that are used to check for winner
         self.sums = np.concatenate(
             (np.sum(self.state, axis=0),  # vertical
              np.sum(self.state, axis=1),  # horizontal
