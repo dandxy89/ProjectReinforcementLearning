@@ -214,7 +214,7 @@ class MonteCarloTreeSearch:
         """
         nodes = list(LevelOrderGroupIter(self.root))
         if nodes:
-            return self.another_action(nodes[1]).GAME.last_play
+            return self.u_q_action(nodes[1]).GAME.last_play
 
     @staticmethod
     def non_uniform_action(nodes):
@@ -229,7 +229,7 @@ class MonteCarloTreeSearch:
         return nodes[np.random.choice(len(records), p=records)]
 
     @staticmethod
-    def another_action(nodes):
+    def u_q_action(nodes):
         """
 
             :param nodes:       List of Nodes with their respective node properties
