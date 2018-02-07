@@ -163,7 +163,7 @@ class MonteCarloTreeSearch:
 
         """
         result = ['\n']
-        output = '%s | Action: %s | Player %s | %s Wins / %s Plays | Q: %.3f | U: %.3f |>'
+        output = '%s | Action: %s | Player %s | %s Wins / %s Plays / WRatio %s | Q: %.3f | U: %.3f |>'
         nodes_selections = []
 
         # From list of tuples of nodes to list of nodes
@@ -174,7 +174,7 @@ class MonteCarloTreeSearch:
         for indent, _, node in RenderTree(self.root, childiter=self.sort_by_move):
             if level == -1 or node in nodes_selections:
                 result.append((output % (indent, node.action, node.GAME.current_player.display,
-                                         node.N_WINS, node.N_PLAYS, node.Q, node.U)))
+                                         node.N_WINS, node.N_PLAYS, node.N_WINS / node.N_PLAYS, node.Q, node.U)))
 
         # Display the result
         print('\n'.join(result))
