@@ -14,7 +14,9 @@ class Config:
     """
     __acceptable_keys_list = ["MODEL_TYPE", "MODEL_NAME", "CNN_FILTER_NUM", "CNN_FILTER_SIZE", "VALUE_FC_SIZE",
                               "L2_REG", "RES_LAYER_NUM", "ACTIVATION_DENSE", "ACTIVATION", "N_LABELS",
-                              "ACTIVATION_POLICY", "BATCH_SIZE", "EPOCHS"]
+                              "ACTIVATION_POLICY", "BATCH_SIZE", "EPOCHS", "MCTS_ITERATIONS", "MCTS_MAX_TIME"]
+
+    # Defaults
     RES_LAYER_NUM = 0
     ACTIVATION_DENSE = "tanh"
     ACTIVATION = "relu"
@@ -28,8 +30,12 @@ class Config:
     VALUE_FC_SIZE = 1
     BATCH_SIZE = 1
     EPOCHS = 2
+    MCTS_ITERATIONS = 30000
+    MCTS_MAX_TIME = 20
 
     def __init__(self, **kwargs):
         for k in kwargs.keys():
             if k in [self.__acceptable_keys_list]:
                 self.__setattr__(k, kwargs[k])
+            else:
+                print("Not adding: {}".format(k))

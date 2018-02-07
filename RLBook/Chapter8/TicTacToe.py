@@ -4,7 +4,6 @@
 Tic Tac Toe game implementation
 
 """
-import logging
 from itertools import cycle
 
 import numpy as np
@@ -60,7 +59,8 @@ class Game:
         self.sums = np.array([])
 
         # players attributes
-        self.players = [Player(name='A', value=1, display='O'), Player(name='B', value=-1, display='X')]
+        self.players = [Player(name='A', value=1, display='O'),
+                        Player(name='B', value=-1, display='X')]
         self.players_values = list([p.value for p in self.players])
         self.players_gen = cycle(self.players)
         self.current_player = next(self.players_gen)
@@ -85,7 +85,6 @@ class Game:
             # convert numpy array to list of tuples
             legal_plays = list(map(tuple, legal_plays))
 
-        logging.debug('Legal plays: %s', legal_plays)
         return legal_plays
 
     def winner(self):
@@ -97,11 +96,10 @@ class Game:
         for player in self.players:
             # one axis is full of this player plays (= win)
             if self.board_size * player.value in self.sums:
-                logging.debug('Winner: %s', player.display)
                 return player
 
-        logging.debug('Winner: None')
-        return None  # no winner found
+        # no winner found
+        return None
 
     def show_board(self, state_number=-1, return_string=False):
         """ Display the game board
@@ -123,6 +121,7 @@ class Game:
                             elements.append(player.display)
                 else:
                     elements.append(no_player_display)
+
             lines.append('|'.join(elements))
         board_representation = '\n'.join(lines)
 
@@ -139,13 +138,13 @@ class Game:
         """
         legal_plays = self.legal_plays()
 
-        # if input move is provided check that it is legal
+        # If input move is provided check that it is legal
         if move is not None:
             if move in legal_plays:
                 selected_move = move
             else:
                 raise ValueError('Selected move is illegal')
-        # select a move randomly
+        # Select a move randomly
         else:
             selected_move = legal_plays[np.random.choice(len(legal_plays), 1)[0]]
 
@@ -170,4 +169,10 @@ class Game:
                        np.sum(np.diag(self.state[::-1]))])))
 
     def translate(self, position):
+        """ Translate tuple to Index
+
+            :param position:
+            :return:
+
+        """
         return self.dictionary.get(position)
