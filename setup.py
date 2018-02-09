@@ -18,7 +18,7 @@ setup(
     # Author Details.
     author="Dan Dixey",
     author_email="dan@functorml.co.uk",
-    # Need to update to credit Wood Mackenzie"s License
+    # Need to update
     license="",
     # Project Classifiers
     classifiers=[
