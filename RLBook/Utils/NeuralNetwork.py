@@ -18,8 +18,14 @@ class NeuralNet:
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        pass
+    def __init__(self, check_point=0):
+        """ Initialise a NeuralNetwork
+
+            :param check_point:         Counter that will be used when save the NN
+
+        """
+        self.CHECK_POINT = check_point
+        self.model = None
 
     @abstractclassmethod
     def train(self, examples):
@@ -64,7 +70,15 @@ class NeuralNet:
 
         # load weights into new model
         self.model.load_weights("{}.h5".format(filename))
-        logging.info("Model has been loaded from a checkpointed: {}".format(filename))
+        logging.info("Model has been loaded from a check-pointed: {}".format(filename))
+
+    @property
+    def increment(self):
+        return self.CHECK_POINT
+
+    @increment.setter
+    def increment(self, value):
+        self.CHECK_POINT = value
 
 
 def objective_function_for_policy(y_true, y_pred):

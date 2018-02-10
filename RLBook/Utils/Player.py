@@ -2,7 +2,7 @@
 """ RLBook.Utils.Player
 """
 from RLBook.Chapter8.Config import Config
-from RLBook.Utils.MathOps import random_value_policy
+from RLBook.Utils.MathOperations import random_value_policy
 
 
 class Player:

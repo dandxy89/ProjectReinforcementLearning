@@ -11,7 +11,7 @@ import numpy as np
 from anytree import Node, LevelOrderGroupIter, RenderTree
 
 from RLBook.Chapter8 import DEFAULT_NODE_PARAMS
-from RLBook.Utils.MathOps import upper_confidence_bound
+from RLBook.Utils.MathOperations import upper_confidence_bound
 
 
 class MonteCarloTreeSearch:
@@ -57,7 +57,7 @@ class MonteCarloTreeSearch:
             # We go down the tree until we reach the bottom always choosing the best score at each level
             else:
                 nodes = node.children
-                scores = [scoring_func(total_plays=node_.parent.N_PLAYS, node=node_) for node_ in nodes]
+                scores = [scoring_func(node=node_) for node_ in nodes]
 
                 # Select actions among children that gives maximum action value
                 if np.random.rand(1) < prob:

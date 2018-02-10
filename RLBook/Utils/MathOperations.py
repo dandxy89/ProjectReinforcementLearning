@@ -3,7 +3,6 @@
 """ RLBook.Utils.MathOps
 """
 import numpy as np
-from scipy.stats import beta
 
 
 def softmax(x: np.ndarray) -> np.ndarray:
@@ -19,25 +18,9 @@ def softmax(x: np.ndarray) -> np.ndarray:
     return x1
 
 
-def thompson(total_plays, node):
-    """ Thompson sampling
-
-        :param total_plays: number of plays of all arms
-        :param node:        node properties
-        :return:            score (min:0, max:1)
-
-    """
-    # Set the value high to ensure this edge is select
-    if node.N_PLAYS == 0:
-        return 99.
-    else:
-        return beta.rvs(a=node.WINS + 1, b=node.N_PLAYS - node.N_WINS + 1, size=1)[0]
-
-
-def upper_confidence_bound(total_plays, node):
+def upper_confidence_bound(node):
     """ Upper Confidence Bound used by AlphaZero
 
-        :param total_plays: number of plays of all arms
         :param node:        node properties
         :return:            score (min:0, max:1)
 
