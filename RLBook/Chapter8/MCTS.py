@@ -11,7 +11,6 @@ import numpy as np
 from anytree import Node, LevelOrderGroupIter, RenderTree
 
 from RLBook.Chapter8 import DEFAULT_NODE_PARAMS
-from RLBook.Utils.Decorators import timeit
 from RLBook.Utils.MathOps import upper_confidence_bound
 
 
@@ -22,7 +21,7 @@ class MonteCarloTreeSearch:
 
     """
 
-    def __init__(self, game, evaluation_func, node_param=DEFAULT_NODE_PARAMS):
+    def __init__(self, game, evaluation_func, node_param=DEFAULT_NODE_PARAMS, use_nn=False):
         """ Initialise a Monte Carlo Tree Search
 
             :param game:                Board Game
@@ -35,6 +34,8 @@ class MonteCarloTreeSearch:
 
         self.node_init_params = node_param
         self.root = Node('0', GAME=self.GAME, **self.node_init_params)
+
+        self.use_nn = use_nn
 
     def selection(self, scoring_func=upper_confidence_bound, prob=0.12):
         """ Select a node of the tree based on scores or expand current one (if not all children have been visited)
@@ -79,10 +80,12 @@ class MonteCarloTreeSearch:
 
         # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
         # tuples p and also a score v in [-1, 1] for the current player.
-        action_probs, leaf_value = self.policy(parent.GAME.state)
+        if self.use_nn:
+            action_probs, leaf_value = self.policy.predict(parent.GAME.state)
 
         if unexplored_plays:
             # Choose one play randomly
+            # TODO: Use the Softmax
             selected_play = unexplored_plays[np.random.choice(len(unexplored_plays), 1)[0]]
 
             # Create a new node where this play is performed
@@ -92,7 +95,12 @@ class MonteCarloTreeSearch:
 
             # Pass the Properties
             properties = deepcopy(self.node_init_params)
-            properties["PRIOR"] = 1  # action_probs[parent.game.translate(selected_play)][1]
+            if self.use_nn:
+                properties["PRIOR"] = leaf_value
+            else:
+                properties["PRIOR"] = 1
+
+            # Action picked
             properties["action"] = parent.GAME.translate(selected_play)
 
             # Create the Child
@@ -117,9 +125,9 @@ class MonteCarloTreeSearch:
         while game.legal_plays():
             game.play()
 
-        if game.winner() == self.root.GAME.current_player:
+        if game.winner == self.root.GAME.current_player:
             return 1 + np.random.rand() * 1e-6
-        elif game.winner() is None:
+        elif game.winner is None:
             return 0
         else:
             return -1 - np.random.rand() * 1e-6
@@ -135,15 +143,25 @@ class MonteCarloTreeSearch:
         node.N_PLAYS += 1
         node.N_WINS += 1 if leaf_value >= 1 else 0
         node.N_TIES += 1 if leaf_value == 0 else 0
-        node.Q = leaf_value if node.Q == 0 else (node.N_PLAYS * node.Q + leaf_value) / (node.N_PLAYS + 1)
+        node.Q = self.update_q(leaf_value=leaf_value, node=node)
 
         # All all of the ancestors
         for ancestor in node.ancestors:
             ancestor.N_PLAYS += 1
             ancestor.N_WINS += 1 if leaf_value >= 1 else 0
             ancestor.N_TIES += 1 if leaf_value == 0 else 0
-            ancestor.Q = leaf_value if ancestor.Q == 0 else (ancestor.N_PLAYS *
-                                                             ancestor.Q + leaf_value) / (ancestor.N_PLAYS + 1)
+            ancestor.Q = self.update_q(leaf_value=leaf_value, node=ancestor)
+
+    @staticmethod
+    def update_q(leaf_value, node):
+        """ Update function for Q
+
+            :param leaf_value:      Leaf value
+            :param node:            Node from in the MCTS tree
+            :return:                Calculated Q value
+
+        """
+        return leaf_value if node.Q == 0 else (node.N_PLAYS * node.Q + leaf_value) / (node.N_PLAYS + 1)
 
     @staticmethod
     def sort_by_move(nodes):
@@ -162,26 +180,30 @@ class MonteCarloTreeSearch:
             :return:                    tree representation as a string or nothing if printed
 
         """
-        result = ['\n']
-        output = '%s | Action: %s | Player %s | %s Wins / %s Plays | WRatio %.3f | Q: %.3f | U: %.3f |>'
-        nodes_selections = []
+        result = []
+        output = '%s | Action: %s | Player %s | %s Wins / %s Plays | WRatio %.3f | Q: %.3f | U: %.3f | p: %.3f |>'
 
         # From list of tuples of nodes to list of nodes
         if level > 0:
             nodes_selections = [e for sub in list(LevelOrderGroupIter(self.root))[:level + 1] for e in sub]
+        else:
+            nodes_selections = []
 
         # Iterate through the Tree and construct the Output
         for indent, _, node in RenderTree(self.root, childiter=self.sort_by_move):
             if level == -1 or node in nodes_selections:
-                result.append((output % (indent, node.action, node.GAME.current_player.display,
-                                         node.N_WINS, node.N_PLAYS, 100 * node.N_WINS / node.N_PLAYS, node.Q, node.U)))
+                result.append((output % (indent, node.action, node.GAME.current_player.display, node.N_WINS,
+                                         node.N_PLAYS, 100 * node.N_WINS / node.N_PLAYS, node.Q, node.U, node.PRIOR)))
 
         # Display the result
         print('\n'.join(result))
 
-    @timeit
-    def search(self, max_iterations, max_runtime):
+    def search(self, max_iterations=20000, max_runtime=20):
         """ Run a Monte Carlo Tree Search starting from root node
+
+            Defaults:
+                - max_iterations      20000
+                - max_runtime         20
 
             :param max_iterations:      max number of iterations for the tree search
             :param max_runtime:         max search time in seconds
@@ -203,7 +225,6 @@ class MonteCarloTreeSearch:
 
             # Early exit if and only if the time taken to solve > max_runtime
             if time.time() - t1 > max_runtime:
-                print("TimeOut!")
                 break
 
     def recommended_play(self):
@@ -214,10 +235,10 @@ class MonteCarloTreeSearch:
         """
         nodes = list(LevelOrderGroupIter(self.root))
         if nodes:
-            return self.u_q_action(nodes[1]).GAME.last_play
+            return self.deterministic_action(nodes[1]).GAME.last_play
 
     @staticmethod
-    def non_uniform_action(nodes):
+    def stochastic_action(nodes):
         """ Non-uniform Action selection
 
             :param nodes:       List of Nodes with their respective node properties
@@ -226,17 +247,19 @@ class MonteCarloTreeSearch:
         """
         records = np.array([np.power(n.U, 1 / n.TAU) for val, n in enumerate(nodes)])
         records /= records.sum()
+
         return nodes[np.random.choice(len(records), p=records)]
 
     @staticmethod
-    def u_q_action(nodes):
+    def deterministic_action(nodes):
         """
 
             :param nodes:       List of Nodes with their respective node properties
             :return:            'Best Node' class
 
         """
-        l = len(nodes)
-        records = np.array([(n.U + n.Q + 1000) * l for val, n in enumerate(nodes)])
+        length = len(nodes)
+        records = np.array([(n.U + n.Q + 1000) * length for val, n in enumerate(nodes)])
         records /= records.sum()
+
         return nodes[np.argmax(records)]

@@ -49,4 +49,5 @@ class KerasModel(NeuralNet):
 
         """
         tuples, value = self.net.model.predict(x=tuple_arrays, verbose=1)
+
         return [(val, prob) for val, prob in enumerate(tuples[0])], value[0][0]

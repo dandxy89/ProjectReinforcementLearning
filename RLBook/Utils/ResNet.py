@@ -7,7 +7,7 @@ from keras.layers import Conv2D, BatchNormalization, Activation, Flatten, Dense,
 from keras.optimizers import SGD
 from keras.regularizers import l2
 
-from RLBook.Utils.MathOps import objective_function_for_policy, objective_function_for_value
+from RLBook.Utils.NeuralNetwork import objective_function_for_policy, objective_function_for_value
 
 
 class ResidualNet:
@@ -19,9 +19,10 @@ class ResidualNet:
         self.optimisation = None
 
     def build(self):
-        """
+        """ Construct the whole Neural Network
 
-            :return:
+            :return:    Keras Model
+            :rtype:     Model
 
         """
         mc = self.config
@@ -60,10 +61,11 @@ class ResidualNet:
         return Model(in_x, [policy_out, value_out], name=mc.MODEL_NAME)
 
     def _build_residual_block(self, x):
-        """
+        """ Add a sequence of the Residual Block
 
-            :param x:
-            :return:
+            :param x:       An existing Keras Model
+            :return:        Appended Residual Block onto the existing Model
+            :rtype:         Model
 
         """
         mc = self.config
@@ -81,10 +83,19 @@ class ResidualNet:
         return x
 
     def compile_model(self):
-        model = self.build()
-        optimisation = SGD(lr=1e-2, momentum=0.9)
-        model.compile(optimizer=optimisation, loss=[objective_function_for_policy, objective_function_for_value])
+        """ Compile the Keras Model
 
-        print(model)
+            :return:        Keras compiled model and optimisation
+            :rtype:         Optimizer, Model
+
+        """
+        model = self.build()
+        # Define the Optimizer
+        optimisation = SGD(lr=self.config.LR,
+                           momentum=self.config.MOMENTUM)
+
+        # Compile the Duel headed NNet
+        model.compile(optimizer=optimisation,
+                      loss=[objective_function_for_policy, objective_function_for_value])
 
         return optimisation, model

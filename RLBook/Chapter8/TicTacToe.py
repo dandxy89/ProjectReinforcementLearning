@@ -8,23 +8,10 @@ from itertools import cycle
 
 import numpy as np
 
+from RLBook.Utils.Player import Player
 
-class Player:
-    """ TicTacToe player
-    """
-
-    def __init__(self, name, value, display):
-        self.name = name
-        self.value = value
-        self.display = display
-
-    def __eq__(self, other):
-        """ Two players are equal if they have the same value
-        """
-        if isinstance(self, other.__class__):
-            return self.value == other.value
-
-        return False
+DEFAULT_PLAYERS = [Player(name='A', value=1, display='O'),
+                   Player(name='B', value=-1, display='X')]
 
 
 class Game:
@@ -43,27 +30,36 @@ class Game:
                   (2, 1): 7,
                   (2, 2): 8}
 
-    def __init__(self, board_size=3, save_history=True):
+    players = DEFAULT_PLAYERS
+
+    def __init__(self, board_size=3, players=None, using_nn=None, nn_player=0):
         """
 
-            :param board_size:
-            :param save_history:
+            :param board_size:          3x3 by Default will be the Board size used
+            :param players:             Optional: Pass
+            :param using_nn:            Flag to indicate if a Neural Network is being utilised
+            :param nn_player:           Identification of which agent is the Neural Network
 
         """
         # Game attributes
         self.board_size = board_size
         self.state = np.zeros((board_size, board_size), dtype=int)
-        self.save_history = save_history
-        self.history = [self.state.copy()]  # copy() needed to avoid appending a reference
         self.last_play = None
         self.sums = np.array([])
 
         # players attributes
-        self.players = [Player(name='A', value=1, display='O'),
-                        Player(name='B', value=-1, display='X')]
+        if players is not None:
+            self.players = players
+
         self.players_values = list([p.value for p in self.players])
         self.players_gen = cycle(self.players)
         self.current_player = next(self.players_gen)
+        self.history = [(self.state.copy(), None,
+                         self.current_player.value)]  # copy() needed to avoid appending a reference
+
+        # Using a Neural Network
+        self.nn_player = nn_player
+        self.using_nn = using_nn
 
     def __repr__(self):
         return "< TicTacToe > "
@@ -78,7 +74,7 @@ class Game:
 
         """
         legal_plays = []
-        if self.winner() is None:
+        if self.winner is None:
             free_spaces = np.isin(self.state, self.players_values, invert=True)
             legal_plays = np.argwhere(free_spaces)
 
@@ -87,6 +83,7 @@ class Game:
 
         return legal_plays
 
+    @property
     def winner(self):
         """ Return the winner player. If game is tied, return None
 
@@ -112,7 +109,7 @@ class Game:
         # creates the string representation of the game
         lines = []
         no_player_display = '.'
-        for line in self.history[state_number]:
+        for line in self.history[state_number][0]:
             elements = []
             for element in line:
                 if element in self.players_values:
@@ -150,14 +147,9 @@ class Game:
 
         # Updates states and players info
         self.state[selected_move] = self.current_player.value
-        if self.save_history:
-            # Copy() needed to avoid appending a reference
-            self.history.append(self.state.copy())
 
-        # Only the current state is save (to be able to display it)
-        else:
-            self.history = [self.state.copy()]
-
+        # Copy() needed to avoid appending a reference
+        self.history.append((self.state.copy(), self.translate(selected_move), self.current_player.value))
         self.current_player = next(self.players_gen)
         self.last_play = selected_move
 
@@ -176,3 +168,26 @@ class Game:
 
         """
         return self.dictionary.get(position)
+
+    def reset(self):
+        # Game attributes
+        self.state = np.zeros((self.board_size, self.board_size), dtype=int)
+        self.history = [self.state.copy()]  # copy() needed to avoid appending a reference
+        self.last_play = None
+        self.sums = np.array([])
+
+    @property
+    def get_nn_player_index(self):
+        """ Get the Neural Network Players Coin choice and index in the Player
+
+            :return:        1 or -1, Index in List of Players
+
+        """
+        if self.using_nn:
+            return None
+        else:
+            return self.players[self.nn_player].value, self.players[self.nn_player].value - 1
+
+    @property
+    def player(self):
+        return self.current_player

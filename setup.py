@@ -39,7 +39,12 @@ setup(
     keywords="Reinforcement Learning, RL",
     # Find all the Projects packages
     packages=find_packages(),
-    install_requires=["pandas==0.22.0"],
+    install_requires=["anytree==2.4.3",
+                      "Keras==2.1.3",
+                      "numpy==1.14.0",
+                      "pandas==0.22.0",
+                      "tensorflow==1.5.0",
+                      "tqdm==4.19.5"],
     # List additional groups of dependencies here (e.g. development dependencies).
     extras_require={
         "developer": ["bumpversion==0.5.3"],

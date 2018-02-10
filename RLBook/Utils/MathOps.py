@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 """ RLBook.Utils.MathOps
 """
-import keras.backend as K
 import numpy as np
-from keras.losses import mean_squared_error
 from scipy.stats import beta
 
 
@@ -54,11 +52,3 @@ def upper_confidence_bound(total_plays, node):
 
 def random_value_policy(state):
     return [(val, prob / 2) for val, prob in enumerate(np.ones(9))], 1.
-
-
-def objective_function_for_policy(y_true, y_pred):
-    return K.sum(-y_true * K.log(y_pred + K.epsilon()), axis=-1)
-
-
-def objective_function_for_value(y_true, y_pred):
-    return mean_squared_error(y_true, y_pred)

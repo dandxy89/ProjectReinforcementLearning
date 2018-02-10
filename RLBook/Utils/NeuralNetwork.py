@@ -5,8 +5,11 @@
 - NeuralNetwork Base Class definition
 
 """
+import logging
 from abc import abstractclassmethod, ABCMeta
 
+from keras import backend as K
+from keras.losses import mean_squared_error
 from keras.models import model_from_json
 
 
@@ -14,7 +17,6 @@ class NeuralNet:
     """ This class specifies the base NeuralNet class.
     """
     __metaclass__ = ABCMeta
-    model = None
 
     def __init__(self):
         pass
@@ -50,6 +52,7 @@ class NeuralNet:
 
         # Serialize weights to HDF5
         self.model.save_weights("{}.h5".format(filename))
+        logging.info("Model has been check-pointed: {}".format(filename))
 
     def load_checkpoint(self, filename):
         """ Loads parameters of the neural network from a given filename
@@ -61,3 +64,12 @@ class NeuralNet:
 
         # load weights into new model
         self.model.load_weights("{}.h5".format(filename))
+        logging.info("Model has been loaded from a checkpointed: {}".format(filename))
+
+
+def objective_function_for_policy(y_true, y_pred):
+    return K.sum(-y_true * K.log(y_pred + K.epsilon()), axis=-1)
+
+
+def objective_function_for_value(y_true, y_pred):
+    return mean_squared_error(y_true, y_pred)

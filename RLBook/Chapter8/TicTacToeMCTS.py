@@ -4,44 +4,45 @@
 -   Simple implementation demonstrating using MCTS for the purpose of playing the game of TicTacToe
 
 """
-from RLBook.Chapter8.Config import Config
-from RLBook.Chapter8.MCTS import MonteCarloTreeSearch
-from RLBook.Chapter8.TicTacToe import Game
-from RLBook.Utils.MathOps import random_value_policy
+from copy import deepcopy
 
-NODE_PARAMS = dict(X=dict(N_PLAYS=0, N_WINS=0, N_TIES=0, SCORE=0., PRIOR=0,
-                          C_PUCT=6., TAU=1, Q=0., U=0., action=None),
-                   O=dict(N_PLAYS=0, N_WINS=0, N_TIES=0, SCORE=0., PRIOR=1.,
-                          C_PUCT=2., TAU=1., Q=0., U=0., action=None))
+from RLBook.Chapter8.MCTS import MonteCarloTreeSearch
+from RLBook.Chapter8.TicTacToe import Game, DEFAULT_PLAYERS
 
 
 def main():
     """ Play two Monte Carlo Tree searches against one another...
     """
     # params:
-    c = Config()
-    g = Game()
+    g = Game(players=DEFAULT_PLAYERS)
 
-    # Run one Game
-    print("\nCurrent Player: {}".format(g.current_player.display))
-    tree = MonteCarloTreeSearch(game=g, evaluation_func=random_value_policy,
-                                node_param=NODE_PARAMS[g.current_player.display])
-    tree.search(max_iterations=c.MCTS_ITERATIONS, max_runtime=c.MCTS_MAX_TIME)
-    g.play(move=tree.recommended_play())
-    tree.show_tree(level=1)
-    g.show_board()
+    new_game = deepcopy(g)
+    new_game_states = []
 
-    while g.legal_plays():
-        print("\nCurrent Player: {}".format(g.current_player.display))
-        tree = MonteCarloTreeSearch(game=g, evaluation_func=random_value_policy,
-                                    node_param=NODE_PARAMS[g.current_player.display])
-        tree.search(max_iterations=c.MCTS_ITERATIONS, max_runtime=c.MCTS_MAX_TIME)
-        g.play(move=tree.recommended_play())
+    # Play until end
+    while new_game.legal_plays() and new_game.winner is None:
+        print(new_game.player)
+        # Rollout the Tree
+        tree = MonteCarloTreeSearch(game=new_game,
+                                    evaluation_func=new_game.player.func,
+                                    node_param=new_game.player.mcts_params,
+                                    use_nn=new_game.player.use_nn)
+
+        # Run the Tree Search
+        tree.search(*new_game.player.mcts_search)
+
+        # Find the recommended move
+        move = tree.recommended_play()
+
+        # Record information
+        new_game_states.append((new_game.player.value, move))
+
+        # Play the recommended move and store the move
+        new_game.play(move=move)
+
+        # Show the tree and board, debugging
         tree.show_tree(level=1)
-        g.show_board()
-
-    tree.show_tree(level=1)
-    print("\nGame Winner")
+        new_game.show_board()
 
 
 if __name__ == '__main__':
