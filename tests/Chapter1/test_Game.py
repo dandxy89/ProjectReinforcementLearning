@@ -4,8 +4,6 @@
 """
 import unittest
 
-import numpy as np
-
 from RLBook.Chapter1.TicTacToe import TicTacToeGame
 
 
@@ -32,14 +30,14 @@ class TestTicTacToe(unittest.TestCase):
         game_two = TicTacToeGame()
         game_two.BOARD[0, 0] = 1
 
-        assert np.array_equal(game_two.get_state(), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0]))
+        assert game_two.get_state() == '[1, 0, 0, 0, 0, 0, 0, 0, 0]'
 
     def test_check_row(self):
         game_three = TicTacToeGame()
         game_three.BOARD[0, 0] = 1
 
         # Should return False
-        assert np.array_equal(game_three.get_state(), np.array([1, 0, 0, 0, 0, 0, 0, 0, 0]))
+        assert game_three.get_state() == '[1, 0, 0, 0, 0, 0, 0, 0, 0]'
         assert not game_three.is_end_state()
 
         game_three.BOARD[0, 1] = 1

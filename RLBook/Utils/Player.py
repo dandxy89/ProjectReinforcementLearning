@@ -36,10 +36,10 @@ class Player:
         return False
 
     def __repr__(self):
-        return "< Player {} | Coin {} | Display {} >".format(self.name, self.value, self.display)
+        return "< Player {} | Label {} | Display {} >".format(self.name, self.value, self.display)
 
     def __str__(self):
-        return "< Player {} | Coin {} | Display {} >".format(self.name, self.value, self.display)
+        return "< Player {} | Label {} | Display {} >".format(self.name, self.value, self.display)
 
     @property
     def func(self):

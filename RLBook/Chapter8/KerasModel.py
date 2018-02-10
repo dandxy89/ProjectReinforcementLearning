@@ -4,6 +4,7 @@
 -   Keras Model - Replicating the work by AlphaZero
 
 """
+from RLBook.Chapter8.Config import Config
 from RLBook.Utils.NeuralNetwork import NeuralNet
 from RLBook.Utils.PolicyTypes import PolicyEnum
 from RLBook.Utils.ResNet import ResidualNet
@@ -13,7 +14,7 @@ class KerasModel(NeuralNet):
     """ Keras Model definition
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Config = Config()):
         """
 
             :param config:
@@ -23,12 +24,19 @@ class KerasModel(NeuralNet):
 
         if config.MODEL_TYPE == PolicyEnum.RESNET.value:
             self.net = ResidualNet(config=config)
+            self.optimisation, self.model = self.net.compile_model()
+        elif config.MODEL_TYPE == "LoadingExisting":
+            self.net = "Awaiting load..."
         else:
             raise NotImplementedError
 
         self.config = config
-        self.optimisation, self.model = self.net.compile_model()
-        self.check_point_counter = 0
+
+    def __repr__(self):
+        return "< Keras Model {} >".format(self.config.MODEL_NAME)
+
+    def __str__(self):
+        return "< Keras Model {} >".format(self.config.MODEL_NAME)
 
     def train(self, tuple_arrays):
         """

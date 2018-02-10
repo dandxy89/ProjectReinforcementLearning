@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" RLBook.Utiles.Trainer
+""" RLBook.Utils.Trainer
 
 1.  Run Episode
 2.  Training
@@ -41,16 +41,18 @@ class Trainer:
     ENV = None
     CONFIG = AllConfig()
 
-    def __init__(self, environment, trainer_config):
+    def __init__(self, environment, trainer_config, agents):
         """ Initialise the Trainer Class
 
             :param environment:     Game or Env
+            :param agents:          References to the Names of the Agents
             :param trainer_config:  All configuration settings for the Trainer
 
         """
         # Collect all the parameters
         self.ENV = environment
         self.CONFIG.trainer = trainer_config
+        self.AGENTS = agents
 
         # Assert that the Trainer class is ready for action
         self.__validate()

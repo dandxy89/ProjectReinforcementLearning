@@ -26,3 +26,9 @@ After reading Deep Thinking by Gary Kasparov - I know want to implement an Agent
 *   Jan -> Feb - implement various exercises from Chapters 1-7
 *   Mar -> Apr - implement various exercises from the remaining chapters
 *   Apr -> May - commence the implementation of the Environment, Agent and auxiliary functionality to support the development work of the ChessZero Agent
+
+# Chapter 8
+
+One thing lead to another and I've implemented a AlphaZero styled implementation, applied to the game of TicTacToe.
+
+Please not that to get the best performance its recommended to build tensorflow from the source.
