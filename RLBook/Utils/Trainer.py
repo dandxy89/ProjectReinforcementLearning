@@ -11,23 +11,6 @@ from abc import abstractclassmethod, ABCMeta
 from RLBook.Utils.Exceptions import IncorrectTrainerInputs
 
 
-class AllConfig:
-    """ All Configuration setting for a Trainer
-    """
-    T = None
-
-    def __repr__(self):
-        return "< Env / Game & Trainer Configuration >"
-
-    @property
-    def trainer(self):
-        return self.T
-
-    @trainer.setter
-    def trainer(self, value):
-        self.T = value
-
-
 class Trainer:
     """ Base Class used for Interfacing with Agents and Environments
     """
@@ -39,7 +22,7 @@ class Trainer:
     AGENTS = []
     AGENT_GEN = None
     ENV = None
-    CONFIG = AllConfig()
+    CONFIG = None
 
     def __init__(self, environment, trainer_config, agents):
         """ Initialise the Trainer Class
@@ -51,7 +34,7 @@ class Trainer:
         """
         # Collect all the parameters
         self.ENV = environment
-        self.CONFIG.trainer = trainer_config
+        self.CONFIG = trainer_config
         self.AGENTS = agents
 
         # Assert that the Trainer class is ready for action

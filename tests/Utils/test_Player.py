@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Testing for Utils
 """
+import datetime
 import unittest
 
 from RLBook.Utils.Player import Player
@@ -44,7 +45,8 @@ class TestUtilsPlayer(unittest.TestCase):
         assert p5.mcts_search == (30000, 20)
         assert p5.nn_params == {'CNN_FILTER_SIZE': 1, 'BATCH_SIZE': 1, 'EPOCHS': 2, 'ACTIVATION_POLICY': 'softmax',
                                 'VALUE_FC_SIZE': 1, 'L2_REG': 0.0002, 'MCTS_MAX_TIME': 20, 'RES_LAYER_NUM': 0,
-                                'CNN_FILTER_NUM': 2, 'MODEL_TYPE': 'ResNet', 'MODEL_NAME': '20180210_KerasModel_TTT',
+                                'CNN_FILTER_NUM': 2, 'MODEL_TYPE': 'ResNet',
+                                'MODEL_NAME': datetime.datetime.now().strftime("%Y%m%d_KerasModel_TTT"),
                                 'ACTIVATION': 'relu', 'ACTIVATION_DENSE': 'tanh', 'MCTS_ITERATIONS': 30000,
                                 'N_LABELS': 9}
         assert not p5.use_nn

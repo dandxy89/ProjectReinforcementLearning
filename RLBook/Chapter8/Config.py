@@ -18,7 +18,8 @@ class Config:
                       "L2_REG", "RES_LAYER_NUM", "ACTIVATION_DENSE", "ACTIVATION", "N_LABELS",
                       "ACTIVATION_POLICY", "BATCH_SIZE", "EPOCHS", "MCTS_ITERATIONS", "MCTS_MAX_TIME"]
     __mcts_keys_list = ["N_PLAYS", "N_WINS", "N_TIES", "SCORE", "PRIOR", "PRIOR",
-                        "C_PUCT", "C_PUCT", "TAU", "Q", "U", "action"]
+                        "C_PUCT", "C_PUCT", "TAU", "Q", "U", "ACTION"]
+
     __acceptable_keys = __mcts_keys_list + __nn_keys_list
 
     # NNet Defaults
@@ -39,6 +40,7 @@ class Config:
     MCTS_MAX_TIME = 20
     MOMENTUM = 0.9
     LR = 1e-2
+    SHUFFLE = True
 
     # MCTS Defaults
     N_PLAYS = 0
@@ -50,7 +52,8 @@ class Config:
     TAU = 1.
     Q = 0.
     U = 0.
-    action = None
+    ACTION = None
+    TRAINING_MODE = True
 
     def __init__(self, **kwargs):
         """ Initialise the Config class
@@ -89,8 +92,8 @@ class Config:
 class EnvConfig:
     """ Environment Settings
     """
-    __acceptable_keys = ["N_ITERATION", "N_EPISODE", "WIN_RATIO", "START_TIME", "START_T", "EVALUATIONS",
-                         "CHECKPOINT"]
+    __acceptable_keys = ["N_ITERATION", "N_EPISODE", "WIN_RATIO", "START_TIME",
+                         "START_T", "EVALUATIONS", "CHECKPOINT"]
 
     def __init__(self, **kwargs):
         """
@@ -102,6 +105,7 @@ class EnvConfig:
         self.N_ITERATION = 5
         self.N_EPISODE = 5
         self.WIN_RATIO = 0.55
+        self.N_DUELS = 10
         self.START_TIME = datetime.datetime.now()
         self.START_T = time.time()
         self.EVALUATIONS = 10

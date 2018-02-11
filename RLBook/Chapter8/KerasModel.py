@@ -4,6 +4,8 @@
 -   Keras Model - Replicating the work by AlphaZero
 
 """
+import numpy as np
+
 from RLBook.Chapter8.Config import Config
 from RLBook.Utils.NeuralNetwork import NeuralNet
 from RLBook.Utils.PolicyTypes import PolicyEnum
@@ -38,7 +40,8 @@ class KerasModel(NeuralNet):
     def __str__(self):
         return "< Keras Model {} >".format(self.config.MODEL_NAME)
 
-    def train(self, tuple_arrays):
+    @staticmethod
+    def concatenate_arrays(tuple_arrays):
         """
 
             :param tuple_arrays:
@@ -46,7 +49,20 @@ class KerasModel(NeuralNet):
 
         """
         state_ary, policy_ary, z_ary = tuple_arrays[0], tuple_arrays[1], tuple_arrays[2]
-        self.net.model.fit(x=state_ary, y=[policy_ary, z_ary],
+        return np.concatenate(state_ary, axis=0), np.concatenate(policy_ary, axis=0), np.concatenate(z_ary, axis=0)
+
+    def train(self, tuple_arrays):
+        """
+
+            :param tuple_arrays:
+            :return:
+
+        """
+        # Concatenate the Arrays and get the training data
+        state_ary, policy_ary, z_ary = self.concatenate_arrays(tuple_arrays=tuple_arrays)
+
+        # Train the Model
+        self.net.model.fit(x=state_ary, y=[policy_ary, z_ary], shuffle=self.config.EPOCHS,
                            batch_size=self.config.BATCH_SIZE, epochs=self.config.EPOCHS)
 
     def predict(self, tuple_arrays=None, state=None, current_player=0):

@@ -54,8 +54,7 @@ class Game:
         self.players_values = list([p.value for p in self.players])
         self.players_gen = cycle(self.players)
         self.current_player = next(self.players_gen)
-        self.history = [(self.state.copy(), None,
-                         self.current_player.value)]  # copy() needed to avoid appending a reference
+        self.history = [(self.state.copy(), None, self.current_player.value, None)]
 
         # Using a Neural Network
         self.nn_player = nn_player
@@ -127,10 +126,11 @@ class Game:
         else:
             print(board_representation)
 
-    def play(self, move=None):
+    def play(self, move=None, action_prob=1):
         """ Play a move
 
-            :param move: selected move to play. If None it is chosen randomly from legal plays
+            :param move:            selected move to play. If None it is chosen randomly from legal plays
+            :param action_prob:     Action probabilities from the Agent
 
         """
         legal_plays = self.legal_plays()
@@ -149,7 +149,8 @@ class Game:
         self.state[selected_move] = self.current_player.value
 
         # Copy() needed to avoid appending a reference
-        self.history.append((self.state.copy(), self.translate(selected_move), self.current_player.value))
+        # noinspection PyTypeChecker
+        self.history.append((self.state.copy(), self.translate(selected_move), self.current_player.value, action_prob))
         self.current_player = next(self.players_gen)
         self.last_play = selected_move
 
@@ -177,16 +178,16 @@ class Game:
         self.sums = np.array([])
 
     @property
-    def get_nn_player_index(self):
+    def nn_index(self):
         """ Get the Neural Network Players Coin choice and index in the Player
 
-            :return:        1 or -1, Index in List of Players
+            :return:        NN Player, Index in List of Players, Player
 
         """
         if self.using_nn:
             return None
         else:
-            return self.players[self.nn_player].value, self.players[self.nn_player].value - 1
+            return self.players[self.nn_player], self.nn_player
 
     @property
     def player(self):

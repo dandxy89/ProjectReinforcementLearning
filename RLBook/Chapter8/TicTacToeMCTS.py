@@ -17,7 +17,6 @@ def main():
     g = Game(players=DEFAULT_PLAYERS)
 
     new_game = deepcopy(g)
-    new_game_states = []
 
     # Play until end
     while new_game.legal_plays() and new_game.winner is None:
@@ -32,10 +31,9 @@ def main():
         tree.search(*new_game.player.mcts_search)
 
         # Find the recommended move
-        move = tree.recommended_play()
-
-        # Record information
-        new_game_states.append((new_game.player.value, move))
+        # Note: Replace to use the Stochastic action selection
+        move, _ = tree.recommended_play(train=False)
+        # Stochastic: move, _ = tree.recommended_play(train=True)
 
         # Play the recommended move and store the move
         new_game.play(move=move)

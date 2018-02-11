@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Testing for Chapter 8 Config
 """
+import datetime
 import unittest
 
 from RLBook.Chapter8.Config import Config
@@ -26,8 +27,8 @@ class TestChapter8KerasModel(unittest.TestCase):
         km = KerasModel(config=c)
 
         assert km.increment == 0
-        assert km.__repr__() == "< Keras Model 20180210_KerasModel_TTT >"
-        assert km.__str__() == "< Keras Model 20180210_KerasModel_TTT >"
+        assert km.__repr__() == "< Keras Model {}_KerasModel_TTT >".format(datetime.datetime.now().strftime("%Y%m%d"))
+        assert km.__str__() == "< Keras Model {}_KerasModel_TTT >".format(datetime.datetime.now().strftime("%Y%m%d"))
         assert km.net == "Awaiting load..."
 
     def test_resnet_init(self):

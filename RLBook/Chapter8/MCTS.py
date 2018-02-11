@@ -20,6 +20,7 @@ class MonteCarloTreeSearch:
         Note: Based on http://mcts.ai/pubs/mcts-survey-master.pdf
 
     """
+    OUT = '%s | Action: %s | Player %s | %s Wins / %s Plays | WRatio %.3f | Q: %.3f | U: %.3f | p: %.3f | Q+U %.3f |>'
 
     def __init__(self, game, evaluation_func, node_param=DEFAULT_NODE_PARAMS, use_nn=False):
         """ Initialise a Monte Carlo Tree Search
@@ -81,12 +82,12 @@ class MonteCarloTreeSearch:
         # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
         # tuples p and also a score v in [-1, 1] for the current player.
         if self.use_nn:
-            action_probs, leaf_value = self.policy.predict(parent.GAME.state)
+            action_prob, leaf_value = self.policy.predict(parent.GAME.state)
 
         if unexplored_plays:
             # Choose one play randomly
-            # TODO: Use the Softmax
-            selected_play = unexplored_plays[np.random.choice(len(unexplored_plays), 1)[0]]
+            index = np.random.choice(len(unexplored_plays), 1)[0]
+            selected_play = unexplored_plays[index]
 
             # Create a new node where this play is performed
             child_game = deepcopy(parent.GAME)
@@ -96,12 +97,12 @@ class MonteCarloTreeSearch:
             # Pass the Properties
             properties = deepcopy(self.node_init_params)
             if self.use_nn:
-                properties["PRIOR"] = leaf_value
+                properties["PRIOR"] = action_prob[index]
             else:
                 properties["PRIOR"] = 1
 
             # Action picked
-            properties["action"] = parent.GAME.translate(selected_play)
+            properties["ACTION"] = parent.GAME.translate(selected_play)
 
             # Create the Child
             node = Node(name=child_name, parent=parent, GAME=child_game, **properties)
@@ -181,7 +182,6 @@ class MonteCarloTreeSearch:
 
         """
         result = []
-        output = '%s | Action: %s | Player %s | %s Wins / %s Plays | WRatio %.3f | Q: %.3f | U: %.3f | p: %.3f |>'
 
         # From list of tuples of nodes to list of nodes
         if level > 0:
@@ -192,8 +192,9 @@ class MonteCarloTreeSearch:
         # Iterate through the Tree and construct the Output
         for indent, _, node in RenderTree(self.root, childiter=self.sort_by_move):
             if level == -1 or node in nodes_selections:
-                result.append((output % (indent, node.action, node.GAME.current_player.display, node.N_WINS,
-                                         node.N_PLAYS, 100 * node.N_WINS / node.N_PLAYS, node.Q, node.U, node.PRIOR)))
+                result.append((self.OUT % (indent, node.ACTION, node.GAME.current_player.display, node.N_WINS,
+                                           node.N_PLAYS, 100 * node.N_WINS / node.N_PLAYS, node.Q, node.U,
+                                           node.PRIOR, node.Q + node.U)))
 
         # Display the result
         print('\n'.join(result))
@@ -227,15 +228,25 @@ class MonteCarloTreeSearch:
             if time.time() - t1 > max_runtime:
                 break
 
-    def recommended_play(self):
+    def recommended_play(self, train=True):
         """ Move recommended by the Monte Carlo Tree Search
 
             :return:        A tuple corresponding to the recommended move
 
         """
         nodes = list(LevelOrderGroupIter(self.root))
+
         if nodes:
-            return self.deterministic_action(nodes[1]).GAME.last_play
+            action_prob = np.zeros((1, 9))
+            for n in nodes[1]:
+                action_prob[0, n.ACTION] = n.PRIOR
+
+            if train:
+                # Use a stochastic action selection
+                return self.stochastic_action(nodes[1]).GAME.last_play, action_prob
+            else:
+                # Use the U + Q strategy used in AlphaZero
+                return self.deterministic_action(nodes[1]).GAME.last_play, action_prob
 
     @staticmethod
     def stochastic_action(nodes):

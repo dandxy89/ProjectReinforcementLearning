@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Testing for Chapter 8 Config
 """
+import datetime
 import unittest
 
 from RLBook.Chapter8.Config import Config, EnvConfig
@@ -31,7 +32,7 @@ class TestChapter8Config(unittest.TestCase):
         """
         c1 = Config()
 
-        assert c1.mcts_params == {'Q': 0.0, 'PRIOR': 1.0, 'SCORE': 0.0, 'N_WINS': 0, 'action': None, 'C_PUCT': 2.0,
+        assert c1.mcts_params == {'Q': 0.0, 'PRIOR': 1.0, 'SCORE': 0.0, 'N_WINS': 0, 'ACTION': None, 'C_PUCT': 2.0,
                                   'N_PLAYS': 0, 'TAU': 1.0, 'U': 0.0, 'N_TIES': 0}
 
     def test_agent_mcts_search(self):
@@ -48,7 +49,8 @@ class TestChapter8Config(unittest.TestCase):
 
         assert c3.nn_params == {'VALUE_FC_SIZE': 1, 'EPOCHS': 2, 'ACTIVATION_POLICY': 'softmax', 'MODEL_TYPE': 'ResNet',
                                 'N_LABELS': 9, 'CNN_FILTER_NUM': 2, 'L2_REG': 0.0002, 'CNN_FILTER_SIZE': 1,
-                                'MODEL_NAME': '20180210_KerasModel_TTT', 'MCTS_MAX_TIME': 20, 'ACTIVATION': 'relu',
+                                'MODEL_NAME': '{}_KerasModel_TTT'.format(datetime.datetime.now().strftime("%Y%m%d")),
+                                'MCTS_MAX_TIME': 20, 'ACTIVATION': 'relu',
                                 'RES_LAYER_NUM': 0, 'BATCH_SIZE': 1, 'MCTS_ITERATIONS': 30000,
                                 'ACTIVATION_DENSE': 'tanh'}
 
@@ -58,7 +60,8 @@ class TestChapter8Config(unittest.TestCase):
         c4 = Config()
 
         assert c4.get_all == {'CNN_FILTER_NUM': 2, 'ACTIVATION': 'relu', 'N_PLAYS': 0,
-                              'MODEL_NAME': '20180210_KerasModel_TTT', 'action': None, 'MCTS_MAX_TIME': 20,
+                              'MODEL_NAME': '{}_KerasModel_TTT'.format(datetime.datetime.now().strftime("%Y%m%d")),
+                              'ACTION': None, 'MCTS_MAX_TIME': 20,
                               'RES_LAYER_NUM': 0, 'TAU': 1.0, 'PRIOR': 1.0, 'N_TIES': 0, 'ACTIVATION_DENSE': 'tanh',
                               'ACTIVATION_POLICY': 'softmax', 'N_LABELS': 9, 'U': 0.0, 'C_PUCT': 2.0,
                               'MCTS_ITERATIONS': 30000, 'MODEL_TYPE': 'ResNet', 'BATCH_SIZE': 1, 'Q': 0.0,

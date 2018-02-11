@@ -4,7 +4,7 @@
 """
 import unittest
 
-from RLBook.Utils.Trainer import AllConfig, Trainer
+from RLBook.Utils.Trainer import Trainer
 
 
 class TestUtilsTrainer(unittest.TestCase):
@@ -16,19 +16,6 @@ class TestUtilsTrainer(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-    def test_all_config(self):
-        """ TODO
-        """
-        a = AllConfig()
-
-        assert a.__repr__() == "< Env / Game & Trainer Configuration >"
-
-        # Test setter
-        a.trainer = "DansProject"
-
-        assert a.trainer == "DansProject"
-        assert isinstance(a, AllConfig)
 
     def test_trainer_init(self):
         """ Trainer class init

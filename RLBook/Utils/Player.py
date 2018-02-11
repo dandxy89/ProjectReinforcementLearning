@@ -10,7 +10,7 @@ class Player:
     """
     eval_function = random_value_policy
 
-    def __init__(self, name, value, display, fn=None, use_nn=False, config=Config):
+    def __init__(self, name, value, display, fn=None, use_nn=False, config=Config()):
         self.name = name
         self.value = value
         self.display = display
@@ -18,12 +18,13 @@ class Player:
         if use_nn:
             from RLBook.Chapter8.KerasModel import KerasModel
             self.nn = use_nn
-            self.eval_function = KerasModel(config.nn_params).predict
+            self.model = KerasModel(config.nn_params)
+            self.eval_function = self.model.predict
         else:
             self.nn = False
 
         # Get all the Config
-        self.c = config()
+        self.c = config
 
         if fn is not None:
             self.eval_function = fn
@@ -33,6 +34,7 @@ class Player:
         """
         if isinstance(self, other.__class__):
             return self.value == other.value
+
         return False
 
     def __repr__(self):
@@ -60,3 +62,7 @@ class Player:
     @property
     def nn_params(self):
         return self.c.nn_params
+
+    @property
+    def mode(self):
+        return self.c.TRAINING_MODE
