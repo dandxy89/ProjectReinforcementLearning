@@ -158,8 +158,10 @@ class TicTacToeTrainer(Trainer):
         for iteration in range(nb_trials):
             n_plays += 1
 
-            # Run the episode and determine if
-            if self.run_episode(eval_phase=False) == player_val:
+            # Run the episode and determine if it classes as a win... including draws
+            # TODO: Determine if and when its best not to have this setup or not...
+            winner = self.run_episode(eval_phase=False)
+            if winner == player_val or winner == 0:
                 n_wins += 1
 
             # Record the stats
