@@ -65,7 +65,7 @@ class TicTacToeTrainer(Trainer):
             tree.search(*new_game.player.mcts_search)
 
             # Play the recommended move and store the move
-            move, action_prob = tree.recommended_play(eval_phase=True)
+            move, action_prob = tree.recommended_play(train=eval_phase)
             new_game.play(move=move, action_prob=action_prob)
 
         if new_game.winner is not None:
@@ -98,7 +98,7 @@ class TicTacToeTrainer(Trainer):
     def self_play(self):
         """ Initialise the self playing process
 
-            :return:
+            :return:        Training by self play
 
         """
         # Select the Training Agent
@@ -117,7 +117,7 @@ class TicTacToeTrainer(Trainer):
                 logging.info("     Running training episode: {}".format(each_episode))
 
                 # Run a Training episode
-                _ = self.run_episode()
+                self.run_episode()
 
             # Running the training of NNet
             player.model.train(self.EPISODE_MEM)
@@ -147,7 +147,7 @@ class TicTacToeTrainer(Trainer):
 
             :param nb_trials:       Number of Trials to Evaluate
             :param player_val:      Player Coin to check the Win Count against
-            :return:
+            :return:                Win Ratio
 
         """
         # Start the counting and prepare the meta-data
