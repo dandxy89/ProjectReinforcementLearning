@@ -48,7 +48,7 @@ class NeuralNet:
         """
         pass
 
-    def save_checkpoint(self, filename):
+    def save_checkpoint(self, filename: str):
         """ Saves the current neural network (with its parameters) into a given filename
         """
         # serialize model to JSON

@@ -9,6 +9,7 @@
 from abc import abstractclassmethod, ABCMeta
 
 from RLBook.Utils.Exceptions import IncorrectTrainerInputs
+from RLBook.Utils.Player import Player
 
 
 class Trainer:
@@ -23,6 +24,8 @@ class Trainer:
     AGENT_GEN = None
     ENV = None
     CONFIG = None
+
+    CHECKPOINT = 0
 
     def __init__(self, environment, trainer_config, agents):
         """ Initialise the Trainer Class
@@ -66,5 +69,22 @@ class Trainer:
         pass
 
     @abstractclassmethod
-    def human_play(self):
+    def human_play(self, human, agent: Player):
         pass
+
+    @property
+    def check(self):
+        return self.CHECKPOINT
+
+    @check.setter
+    def check(self, x: int):
+        self.CHECKPOINT += x
+
+    def player_check(self, player: Player):
+        return "{}{}".format(player.model_name, self.CHECKPOINT)
+
+    def __repr__(self):
+        return "< Base Class Trainer >"
+
+    def __str__(self):
+        return "< Base Class Trainer >"

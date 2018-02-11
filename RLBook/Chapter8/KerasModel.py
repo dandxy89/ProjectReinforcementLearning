@@ -4,6 +4,8 @@
 -   Keras Model - Replicating the work by AlphaZero
 
 """
+import logging
+
 import numpy as np
 
 from RLBook.Chapter8.Config import Config
@@ -27,9 +29,13 @@ class KerasModel(NeuralNet):
         if config.MODEL_TYPE == PolicyEnum.RESNET.value:
             self.net = ResidualNet(config=config)
             self.optimisation, self.model = self.net.compile_model()
+
         elif config.MODEL_TYPE == "LoadingExisting":
+            logging.warning("Awaiting load...")
             self.net = "Awaiting load..."
+
         else:
+            logging.warning("Neural Network selection not known.")
             raise NotImplementedError
 
         self.config = config
@@ -49,7 +55,9 @@ class KerasModel(NeuralNet):
 
         """
         state_ary, policy_ary, z_ary = tuple_arrays[0], tuple_arrays[1], tuple_arrays[2]
-        return np.concatenate(state_ary, axis=0), np.concatenate(policy_ary, axis=0), np.concatenate(z_ary, axis=0)
+        return np.concatenate(state_ary, axis=0), \
+               np.concatenate(policy_ary, axis=0), \
+               np.concatenate(z_ary, axis=0)
 
     def train(self, tuple_arrays):
         """

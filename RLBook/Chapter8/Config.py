@@ -15,7 +15,7 @@ class Config:
     """ Model Configuration
     """
     __nn_keys_list = ["MODEL_TYPE", "MODEL_NAME", "CNN_FILTER_NUM", "CNN_FILTER_SIZE", "VALUE_FC_SIZE",
-                      "L2_REG", "RES_LAYER_NUM", "ACTIVATION_DENSE", "ACTIVATION", "N_LABELS",
+                      "L2_REG", "RES_LAYER_NUM", "ACTIVATION_DENSE", "ACTIVATION", "N_LABELS", "MODEL_TYPE",
                       "ACTIVATION_POLICY", "BATCH_SIZE", "EPOCHS", "MCTS_ITERATIONS", "MCTS_MAX_TIME"]
     __mcts_keys_list = ["N_PLAYS", "N_WINS", "N_TIES", "SCORE", "PRIOR", "PRIOR",
                         "C_PUCT", "C_PUCT", "TAU", "Q", "U", "ACTION"]
@@ -30,7 +30,7 @@ class Config:
     MODEL_TYPE = PolicyEnum.RESNET.value
     CNN_FILTER_NUM = 2
     CNN_FILTER_SIZE = 1
-    MODEL_NAME = datetime.datetime.now().strftime("%Y%m%d_KerasModel_TTT")
+    MODEL_NAME = "{}_V".format(datetime.datetime.now().strftime("%Y%m%d_KerasModel_TTT"))
     N_LABELS = 9
     ACTIVATION_POLICY = "softmax"
     VALUE_FC_SIZE = 1
@@ -92,8 +92,7 @@ class Config:
 class EnvConfig:
     """ Environment Settings
     """
-    __acceptable_keys = ["N_ITERATION", "N_EPISODE", "WIN_RATIO", "START_TIME",
-                         "START_T", "EVALUATIONS", "CHECKPOINT"]
+    __acceptable_keys = ["N_ITERATION", "N_EPISODE", "WIN_RATIO", "START_TIME", "START_T", "EVALUATIONS"]
 
     def __init__(self, **kwargs):
         """
@@ -109,7 +108,6 @@ class EnvConfig:
         self.START_TIME = datetime.datetime.now()
         self.START_T = time.time()
         self.EVALUATIONS = 10
-        self.CHECKPOINT = 0
 
         for k in kwargs:
             # If the Key is in the accepted list then update
@@ -128,14 +126,6 @@ class EnvConfig:
     @property
     def get_all(self):
         return {name: self.__getattribute__(name) for name in self.__acceptable_keys}
-
-    @property
-    def check(self):
-        return self.CHECKPOINT
-
-    @check.setter
-    def check(self, x):
-        self.CHECKPOINT += x
 
     def __repr__(self):
         return "< Environment Config >"

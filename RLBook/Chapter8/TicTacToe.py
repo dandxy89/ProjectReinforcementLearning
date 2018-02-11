@@ -8,10 +8,7 @@ from itertools import cycle
 
 import numpy as np
 
-from RLBook.Utils.Player import Player
-
-DEFAULT_PLAYERS = [Player(name='A', value=1, display='O'),
-                   Player(name='B', value=-1, display='X')]
+from RLBook.Chapter8.DefaultPlayers import DEFAULT_PLAYERS
 
 
 class Game:
@@ -20,7 +17,7 @@ class Game:
         https://en.wikipedia.org/wiki/Tic-tac-toe
 
     """
-    dictionary = {(0, 0): 0,
+    DICTIONARY = {(0, 0): 0,
                   (0, 1): 1,
                   (0, 2): 2,
                   (1, 0): 3,
@@ -29,6 +26,8 @@ class Game:
                   (2, 0): 6,
                   (2, 1): 7,
                   (2, 2): 8}
+    INDEX = {1: 0,
+             0: 1}
 
     players = DEFAULT_PLAYERS
 
@@ -168,7 +167,7 @@ class Game:
             :return:
 
         """
-        return self.dictionary.get(position)
+        return self.DICTIONARY.get(position)
 
     def reset(self):
         # Game attributes
@@ -192,3 +191,7 @@ class Game:
     @property
     def player(self):
         return self.current_player
+
+    @property
+    def competing_player(self):
+        return self.players[self.INDEX[self.nn_player]]

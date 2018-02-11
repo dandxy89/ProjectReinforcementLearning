@@ -49,7 +49,7 @@ class TestChapter8Config(unittest.TestCase):
 
         assert c3.nn_params == {'VALUE_FC_SIZE': 1, 'EPOCHS': 2, 'ACTIVATION_POLICY': 'softmax', 'MODEL_TYPE': 'ResNet',
                                 'N_LABELS': 9, 'CNN_FILTER_NUM': 2, 'L2_REG': 0.0002, 'CNN_FILTER_SIZE': 1,
-                                'MODEL_NAME': '{}_KerasModel_TTT'.format(datetime.datetime.now().strftime("%Y%m%d")),
+                                'MODEL_NAME': '{}_KerasModel_TTT_V'.format(datetime.datetime.now().strftime("%Y%m%d")),
                                 'MCTS_MAX_TIME': 20, 'ACTIVATION': 'relu',
                                 'RES_LAYER_NUM': 0, 'BATCH_SIZE': 1, 'MCTS_ITERATIONS': 30000,
                                 'ACTIVATION_DENSE': 'tanh'}
@@ -60,7 +60,7 @@ class TestChapter8Config(unittest.TestCase):
         c4 = Config()
 
         assert c4.get_all == {'CNN_FILTER_NUM': 2, 'ACTIVATION': 'relu', 'N_PLAYS': 0,
-                              'MODEL_NAME': '{}_KerasModel_TTT'.format(datetime.datetime.now().strftime("%Y%m%d")),
+                              'MODEL_NAME': '{}_KerasModel_TTT_V'.format(datetime.datetime.now().strftime("%Y%m%d")),
                               'ACTION': None, 'MCTS_MAX_TIME': 20,
                               'RES_LAYER_NUM': 0, 'TAU': 1.0, 'PRIOR': 1.0, 'N_TIES': 0, 'ACTIVATION_DENSE': 'tanh',
                               'ACTIVATION_POLICY': 'softmax', 'N_LABELS': 9, 'U': 0.0, 'C_PUCT': 2.0,
@@ -93,18 +93,7 @@ class TestChapter8Config(unittest.TestCase):
         del d["START_T"]
         del d["START_TIME"]
 
-        assert d == {'CHECKPOINT': 0, 'N_ITERATION': 5, 'N_EPISODE': 5, 'EVALUATIONS': 10, 'WIN_RATIO': 0.55}
-
-    def test_check_property(self):
-        """ Checkpoint Attribute
-        """
-        e3 = EnvConfig(**dict(CHECKPOINT=1))
-
-        assert e3.check == 1
-
-        e3.check = 2
-
-        assert e3.check == 3
+        assert d == dict(N_ITERATION=5, N_EPISODE=5, EVALUATIONS=10, WIN_RATIO=0.55)
 
 
 if __name__ == '__main__':

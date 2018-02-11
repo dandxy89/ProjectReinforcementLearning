@@ -20,6 +20,7 @@ class Player:
             self.nn = use_nn
             self.model = KerasModel(config.nn_params)
             self.eval_function = self.model.predict
+
         else:
             self.nn = False
 
@@ -66,3 +67,7 @@ class Player:
     @property
     def mode(self):
         return self.c.TRAINING_MODE
+
+    @property
+    def model_name(self):
+        return self.c.MODEL_NAME

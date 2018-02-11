@@ -4,6 +4,7 @@
 *   Monte Carlo Tree Search implementation
 
 """
+import logging
 import time
 from copy import deepcopy
 
@@ -211,6 +212,8 @@ class MonteCarloTreeSearch:
 
         """
         t1 = time.time()
+
+        # Iterate for the maximum number of iterations
         for _ in range(max_iterations):
             # Selection
             node = self.selection()
@@ -226,7 +229,7 @@ class MonteCarloTreeSearch:
 
             # Early exit if and only if the time taken to solve > max_runtime
             if time.time() - t1 > max_runtime:
-                break
+                logging.debug("TimeOut during the searching phase.")
 
     def recommended_play(self, train=True):
         """ Move recommended by the Monte Carlo Tree Search
@@ -242,10 +245,10 @@ class MonteCarloTreeSearch:
                 action_prob[0, n.ACTION] = n.PRIOR
 
             if train:
-                # Use a stochastic action selection
+                logging.debug("Using a stochastic action selection")
                 return self.stochastic_action(nodes[1]).GAME.last_play, action_prob
             else:
-                # Use the U + Q strategy used in AlphaZero
+                logging.debug("Using the U + Q strategy used in AlphaZero")
                 return self.deterministic_action(nodes[1]).GAME.last_play, action_prob
 
     @staticmethod

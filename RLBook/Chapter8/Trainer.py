@@ -6,6 +6,7 @@
 3.  Concatenate into Batch
 
 """
+import logging
 from copy import deepcopy
 
 import numpy as np
@@ -13,12 +14,14 @@ import numpy as np
 from RLBook.Chapter8.Config import EnvConfig
 from RLBook.Chapter8.MCTS import MonteCarloTreeSearch
 from RLBook.Chapter8.TicTacToe import Game
+from RLBook.Utils.Player import Player
 from RLBook.Utils.Trainer import Trainer
 
 
 class TicTacToeTrainer(Trainer):
     """ TicTacToe trainer
     """
+    CHECKPOINT = 0
 
     def __init__(self, environment=Game(), trainer_config=EnvConfig()):
         """ Initialise a Tic-Tac-Toe trainer
@@ -35,13 +38,20 @@ class TicTacToeTrainer(Trainer):
         """
         super().__init__(environment=environment, trainer_config=trainer_config)
 
-    def run_episode(self):
+    def __repr__(self):
+        return "< TicTacToe Trainer Class >"
+
+    def __str__(self):
+        return "< TicTacToe Trainer Class >"
+
+    def run_episode(self, eval_phase=True):
         """
 
             :return:
 
         """
         new_game = deepcopy(self.ENV)
+        winner = None
 
         # Play until end
         while new_game.legal_plays():
@@ -55,7 +65,7 @@ class TicTacToeTrainer(Trainer):
             tree.search(*new_game.player.mcts_search)
 
             # Play the recommended move and store the move
-            move, action_prob = tree.recommended_play(train=True)
+            move, action_prob = tree.recommended_play(eval_phase=True)
             new_game.play(move=move, action_prob=action_prob)
 
         if new_game.winner is not None:
@@ -82,58 +92,86 @@ class TicTacToeTrainer(Trainer):
                 # Store the information and use later...
                 self.EPISODE_MEM.append((states, move_prob, scores))
 
+        # Return
+        return 0 if winner is None else winner
+
     def self_play(self):
-        """
+        """ Initialise the self playing process
 
             :return:
 
         """
+        # Select the Training Agent
+        player, player_index = self.GAME.nn_index
+        other_player = self.GAME.competing_player
+        best_fn = self.player_check(player=player)
+
+        # Create a check-point
+        player.model.save_checkpoint(filename=best_fn)
+        player.check = 1
+
         for each_iteration in self.CONFIG.TRAINER.N_ITERATION:
-            print("Running training iteration: {}".format(each_iteration))
+            logging.info("Running training iteration: {}".format(each_iteration))
 
             for each_episode in self.CONFIG.TRAINER.EPISODE_MEM:
-                print("     Running training episode: {}".format(each_episode))
+                logging.info("     Running training episode: {}".format(each_episode))
 
                 # Run a Training episode
-                self.run_episode()
-
-            # Select the Training Agent
-            player, player_index = self.GAME.nn_index
+                _ = self.run_episode()
 
             # Running the training of NNet
             player.model.train(self.EPISODE_MEM)
+            new_best_fn = self.player_check(player=player)
 
             # Once all the training has happened lets now update the underlying NNet Model
-            player.model.save_checkpoint(filename="TODO")
+            player.model.save_checkpoint(filename=new_best_fn)
+            player.check = 1
 
             # Allow the models to compete against one another
-            win_ratio = self.dueling(nb_trials=self.CONFIG.N_DUELS)
+            win_ratio = self.dueling(nb_trials=self.CONFIG.N_DUELS, player_val=player.value)
 
+            # If the Win ratio is greater than the Min Win Ratio then replace - otherwise revert
             if win_ratio > self.CONFIG.WIN_RATIO:
                 # Updating the Competing Player
-                print("Replace: {}".format(player_index))
+                logging.info("Replacing: {}".format(other_player.value))
+                best_fn = new_best_fn
 
-            raise NotImplementedError
+                # Replace the self play model
+                other_player.model.load_checkpoint(filename=best_fn)
+            else:
+                logging.info("Reverting the Model to the previous version...")
+                player.model.load_checkpoint(filename=best_fn)
 
-    def human_play(self):
-        """
-
-            :return:
-
-        """
-        raise NotImplementedError
-
-    def dueling(self, nb_trials=None, player_val=1):
-        """
+    def dueling(self, nb_trials=None, player_val=0):
+        """ Dueling the two models against one another
 
             :param nb_trials:       Number of Trials to Evaluate
             :param player_val:      Player Coin to check the Win Count against
             :return:
 
         """
+        # Start the counting and prepare the meta-data
         nb_trials = self.CONFIG.trainer.EVALUATIONS if nb_trials is None else nb_trials
-        # wins = 0
+        n_wins, n_plays = 0, 0
+
         # Iterate from the number of trials
-        # for _ in range(nb_trials):
-        # TODO: Implement this...
+        for iteration in range(nb_trials):
+            n_plays += 1
+
+            # Run the episode and determine if
+            if self.run_episode(eval_phase=False) == player_val:
+                n_wins += 1
+
+            # Record the stats
+            logging.info("Dueling iteration: {} | Wins {} | NPlays {} |>".format(iteration, n_wins, n_plays))
+
+        # Return
+        return n_wins / n_plays if n_wins > 0 else 0
+
+    def human_play(self, human, agent: Player):
+        """ Human vs AI Agent
+
+            :return:
+
+        """
         raise NotImplementedError

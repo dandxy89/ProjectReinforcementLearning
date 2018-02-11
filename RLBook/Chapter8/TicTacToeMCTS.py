@@ -6,8 +6,9 @@
 """
 from copy import deepcopy
 
+from RLBook.Chapter8.DefaultPlayers import DEFAULT_PLAYERS
 from RLBook.Chapter8.MCTS import MonteCarloTreeSearch
-from RLBook.Chapter8.TicTacToe import Game, DEFAULT_PLAYERS
+from RLBook.Chapter8.TicTacToe import Game
 
 
 def main():

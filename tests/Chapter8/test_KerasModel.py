@@ -27,8 +27,8 @@ class TestChapter8KerasModel(unittest.TestCase):
         km = KerasModel(config=c)
 
         assert km.increment == 0
-        assert km.__repr__() == "< Keras Model {}_KerasModel_TTT >".format(datetime.datetime.now().strftime("%Y%m%d"))
-        assert km.__str__() == "< Keras Model {}_KerasModel_TTT >".format(datetime.datetime.now().strftime("%Y%m%d"))
+        assert km.__repr__() == "< Keras Model {}_KerasModel_TTT_V >".format(datetime.datetime.now().strftime("%Y%m%d"))
+        assert km.__str__() == "< Keras Model {}_KerasModel_TTT_V >".format(datetime.datetime.now().strftime("%Y%m%d"))
         assert km.net == "Awaiting load..."
 
     def test_resnet_init(self):
