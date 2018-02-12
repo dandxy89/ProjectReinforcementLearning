@@ -53,19 +53,6 @@ class KerasModel(NeuralNet):
             :param tuple_arrays:
             :return:
 
-        Traceback (most recent call last):
-          File "/home/dan/PycharmProjects/ProjectReinforcementLearning/RLBook/Chapter8/TrainerMain.py", line 28, in <module>
-            train_model()
-          File "/home/dan/PycharmProjects/ProjectReinforcementLearning/RLBook/Chapter8/TrainerMain.py", line 24, in train_model
-            trainer.self_play()
-          File "/home/dan/PycharmProjects/ProjectReinforcementLearning/RLBook/Chapter8/Trainer.py", line 125, in self_play
-            player.model.train(self.EPISODE_MEM)
-          File "/home/dan/PycharmProjects/ProjectReinforcementLearning/RLBook/Chapter8/KerasModel.py", line 70, in train
-            state_ary, policy_ary, z_ary = self.concatenate_arrays(tuple_arrays=tuple_arrays)
-          File "/home/dan/PycharmProjects/ProjectReinforcementLearning/RLBook/Chapter8/KerasModel.py", line 57, in concatenate_arrays
-            state_ary, policy_ary, z_ary = tuple_arrays[0], tuple_arrays[1], tuple_arrays[2]
-        IndexError: list index out of range
-
         """
         state_ary, policy_ary, z_ary = tuple_arrays[0], tuple_arrays[1], tuple_arrays[2]
         return np.concatenate(state_ary, axis=0), \
@@ -81,7 +68,7 @@ class KerasModel(NeuralNet):
         """
         # Concatenate the Arrays and get the training data
         state_ary, policy_ary, z_ary = self.concatenate_arrays(tuple_arrays=tuple_arrays)
-        print("Training")
+
         # Train the Model
         self.model.fit(x=state_ary, y=[policy_ary, z_ary], shuffle=self.config.EPOCHS,
                        batch_size=self.config.BATCH_SIZE, epochs=self.config.EPOCHS,
