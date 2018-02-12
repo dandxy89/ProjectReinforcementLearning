@@ -7,7 +7,6 @@
 
 """
 import logging
-from copy import deepcopy
 
 import numpy as np
 
@@ -23,7 +22,7 @@ class TicTacToeTrainer(Trainer):
     """
     CHECKPOINT = 0
 
-    def __init__(self, environment=Game(), trainer_config=EnvConfig()):
+    def __init__(self, environment=Game(), trainer_config={}):
         """ Initialise a Tic-Tac-Toe trainer
 
             Used for:
@@ -36,7 +35,7 @@ class TicTacToeTrainer(Trainer):
             :param trainer_config:  All configuration settings for the Trainer
 
         """
-        super().__init__(environment=environment, trainer_config=trainer_config)
+        super().__init__(environment=environment, trainer_config=EnvConfig(**trainer_config))
 
     def __repr__(self):
         return "< TicTacToe Trainer Class >"
@@ -50,7 +49,7 @@ class TicTacToeTrainer(Trainer):
             :return:
 
         """
-        new_game = deepcopy(self.ENV)
+        new_game = Game(players=self.GAME.players, using_nn=True, nn_player=self.GAME.nn_player)
         winner = None
 
         # Play until end
@@ -67,6 +66,9 @@ class TicTacToeTrainer(Trainer):
             # Play the recommended move and store the move
             move, action_prob = tree.recommended_play(train=eval_phase)
             new_game.play(move=move, action_prob=action_prob)
+            logging.info("Showing board!")
+            new_game.show_board()
+            tree.show_tree(level=1)
 
         if new_game.winner is not None:
             # Remove the first item - the first element in the list is just used for viz
@@ -85,12 +87,14 @@ class TicTacToeTrainer(Trainer):
                 # Translate the States
                 for index in range(2):
                     if index == index_player:
-                        states[ind, index, :, :] = np.abs(np.where(state == coin.value, state, 0))
+                        states[0, index, :, :] = np.abs(np.where(state == coin.value, state, 0))
                     else:
-                        states[ind, index, :, :] = np.abs(np.where(state != coin.value, state, 0))
+                        states[0, index, :, :] = np.abs(np.where(state != coin.value, state, 0))
 
                 # Store the information and use later...
-                self.EPISODE_MEM.append((states, move_prob, scores))
+                self.EPISODE_MEM[0].append(states)
+                self.EPISODE_MEM[1].append(move_prob)
+                self.EPISODE_MEM[2].append(scores)
 
         # Return
         return 0 if winner is None else winner
@@ -110,17 +114,20 @@ class TicTacToeTrainer(Trainer):
         player.model.save_checkpoint(filename=best_fn)
         player.check = 1
 
-        for each_iteration in self.CONFIG.TRAINER.N_ITERATION:
-            logging.info("Running training iteration: {}".format(each_iteration))
+        for each_iteration in range(self.CONFIG.N_ITERATION):
+            logging.info("Running training iteration: {}".format(each_iteration + 1))
 
-            for each_episode in self.CONFIG.TRAINER.EPISODE_MEM:
-                logging.info("     Running training episode: {}".format(each_episode))
+            for each_episode in range(self.CONFIG.N_EPISODE):
+                logging.info("     Running training episode: {}".format(each_episode + 1))
 
                 # Run a Training episode
                 self.run_episode()
 
-            # Running the training of NNet
-            player.model.train(self.EPISODE_MEM)
+                # Running the training of NNet
+                if len(self.EPISODE_MEM[0]) > 0:
+                    player.model.train(self.EPISODE_MEM)
+
+            # Get the Best Function
             new_best_fn = self.player_check(player=player)
 
             # Once all the training has happened lets now update the underlying NNet Model
@@ -128,7 +135,7 @@ class TicTacToeTrainer(Trainer):
             player.check = 1
 
             # Allow the models to compete against one another
-            win_ratio = self.dueling(nb_trials=self.CONFIG.N_DUELS, player_val=player.value)
+            win_ratio = self.dueling(nb_trials=self.CONFIG.N_DUELS, player_val=player_index)
 
             # If the Win ratio is greater than the Min Win Ratio then replace - otherwise revert
             if win_ratio > self.CONFIG.WIN_RATIO:
@@ -151,7 +158,7 @@ class TicTacToeTrainer(Trainer):
 
         """
         # Start the counting and prepare the meta-data
-        nb_trials = self.CONFIG.trainer.EVALUATIONS if nb_trials is None else nb_trials
+        nb_trials = self.CONFIG.EVALUATIONS if nb_trials is None else nb_trials
         n_wins, n_plays = 0, 0
 
         # Iterate from the number of trials

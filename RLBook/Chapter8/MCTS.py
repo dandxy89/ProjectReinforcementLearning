@@ -12,6 +12,7 @@ import numpy as np
 from anytree import Node, LevelOrderGroupIter, RenderTree
 
 from RLBook.Chapter8 import DEFAULT_NODE_PARAMS
+from RLBook.Chapter8.TicTacToe import Game
 from RLBook.Utils.MathOperations import upper_confidence_bound
 
 
@@ -56,6 +57,7 @@ class MonteCarloTreeSearch:
             # If node still has unexplored children we select it
             if len(node.GAME.legal_plays()) > len(node.children):
                 return node
+
             # We go down the tree until we reach the bottom always choosing the best score at each level
             else:
                 nodes = node.children
@@ -83,7 +85,18 @@ class MonteCarloTreeSearch:
         # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
         # tuples p and also a score v in [-1, 1] for the current player.
         if self.use_nn:
-            action_prob, leaf_value = self.policy.predict(parent.GAME.state)
+            # Get empty templates
+            states, state, value = np.zeros((1, 2, 3, 3)), parent.GAME.player.value, parent.GAME.player.value
+
+            # Translate the States
+            for index in range(2):
+                if index == value:
+                    states[0, index, :, :] = np.abs(np.where(state == value, state, 0))
+                else:
+                    states[0, index, :, :] = np.abs(np.where(state != value, state, 0))
+
+            # Get a prediction
+            action_prob, leaf_value = self.policy(states)
 
         if unexplored_plays:
             # Choose one play randomly
@@ -91,14 +104,16 @@ class MonteCarloTreeSearch:
             selected_play = unexplored_plays[index]
 
             # Create a new node where this play is performed
-            child_game = deepcopy(parent.GAME)
+            child_game = Game(players=parent.GAME.players,
+                              using_nn=parent.GAME.using_nn,
+                              nn_player=parent.GAME.nn_player)
             child_game.play(selected_play)
             child_name = parent.name + '_' + str(len(parent.children))
 
             # Pass the Properties
             properties = deepcopy(self.node_init_params)
             if self.use_nn:
-                properties["PRIOR"] = action_prob[index]
+                properties["PRIOR"] = action_prob[index][1]
             else:
                 properties["PRIOR"] = 1
 
@@ -122,7 +137,9 @@ class MonteCarloTreeSearch:
 
         """
         # Play a game until the end
-        game = deepcopy(node.GAME)
+        game = Game(players=node.GAME.players,
+                    using_nn=node.GAME.using_nn,
+                    nn_player=node.GAME.nn_player)
 
         while game.legal_plays():
             game.play()
@@ -200,7 +217,7 @@ class MonteCarloTreeSearch:
         # Display the result
         print('\n'.join(result))
 
-    def search(self, max_iterations=20000, max_runtime=20):
+    def search(self, max_iterations=5000, max_runtime=20):
         """ Run a Monte Carlo Tree Search starting from root node
 
             Defaults:
@@ -229,7 +246,8 @@ class MonteCarloTreeSearch:
 
             # Early exit if and only if the time taken to solve > max_runtime
             if time.time() - t1 > max_runtime:
-                logging.debug("TimeOut during the searching phase.")
+                logging.warning("TimeOut during the searching phase.")
+                break
 
     def recommended_play(self, train=True):
         """ Move recommended by the Monte Carlo Tree Search

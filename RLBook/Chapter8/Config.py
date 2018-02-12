@@ -34,10 +34,10 @@ class Config:
     N_LABELS = 9
     ACTIVATION_POLICY = "softmax"
     VALUE_FC_SIZE = 1
-    BATCH_SIZE = 1
+    BATCH_SIZE = 8
     EPOCHS = 2
-    MCTS_ITERATIONS = 30000
-    MCTS_MAX_TIME = 20
+    MCTS_ITERATIONS = 10000
+    MCTS_MAX_TIME = 9
     MOMENTUM = 0.9
     LR = 1e-2
     SHUFFLE = True
@@ -101,9 +101,9 @@ class EnvConfig:
 
         """
         # params
-        self.N_ITERATION = 5
-        self.N_EPISODE = 5
-        self.WIN_RATIO = 0.55
+        self.N_ITERATION = 30
+        self.N_EPISODE = 20
+        self.WIN_RATIO = 0.52
         self.N_DUELS = 10
         self.START_TIME = datetime.datetime.now()
         self.START_T = time.time()

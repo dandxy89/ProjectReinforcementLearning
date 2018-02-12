@@ -18,7 +18,7 @@ class Player:
         if use_nn:
             from RLBook.Chapter8.KerasModel import KerasModel
             self.nn = use_nn
-            self.model = KerasModel(config.nn_params)
+            self.model = KerasModel(config=config)
             self.eval_function = self.model.predict
 
         else:

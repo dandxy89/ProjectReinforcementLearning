@@ -183,7 +183,7 @@ class Game:
             :return:        NN Player, Index in List of Players, Player
 
         """
-        if self.using_nn:
+        if not self.using_nn:
             return None
         else:
             return self.players[self.nn_player], self.nn_player
