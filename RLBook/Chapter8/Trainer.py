@@ -7,6 +7,7 @@
 
 """
 import logging
+import pickle
 from copy import deepcopy
 
 import numpy as np
@@ -24,7 +25,8 @@ class TicTacToeTrainer(Trainer):
     """
     CHECKPOINT = 0
 
-    def __init__(self, environment=Game(), trainer_config={}, eval_functions=create_keras_models()):
+    def __init__(self, environment=Game(), trainer_config={}, eval_functions=create_keras_models(),
+                 memory: list = None):
         """ Initialise a Tic-Tac-Toe trainer
 
             Used for:
@@ -35,10 +37,15 @@ class TicTacToeTrainer(Trainer):
 
             :param environment:     Game or Env
             :param trainer_config:  All configuration settings for the Trainer
+            :param eval_functions:  One evaluation function per player
+            :param memory:          List of the all the Memories captured during training
 
         """
         super().__init__(environment=environment, trainer_config=EnvConfig(**trainer_config))
         self.eval_function = eval_functions
+
+        if memory is not None:
+            self.EPISODE_MEM = memory
 
     def __repr__(self):
         return "< TicTacToe Trainer Class >"
@@ -124,6 +131,16 @@ class TicTacToeTrainer(Trainer):
         model.save_checkpoint(filename=best_fn)
         player.check = 1
 
+        # Warm up Iterations to populate the Memory
+        for each_warm_up in range(self.CONFIG.WARM_UP_ITERATION):
+            logging.info("     Running warm up episode: {}".format(each_warm_up + 1))
+
+            # Run a Training episode
+            self.run_episode()
+
+        # Pickle the Memory
+        self.pickle_memory()
+
         for each_iteration in range(self.CONFIG.N_ITERATION):
             logging.info("Running training iteration: {}".format(each_iteration + 1))
 
@@ -134,8 +151,10 @@ class TicTacToeTrainer(Trainer):
                 self.run_episode()
 
                 # Running the training of NNet
-                if self.EPISODE_MEM:
-                    model.train(self.EPISODE_MEM)
+                model.train(self.EPISODE_MEM)
+
+            # Pickle the Memory
+            self.pickle_memory()
 
             # Get the Best Function
             new_best_fn = self.player_check(player=player)
@@ -159,6 +178,13 @@ class TicTacToeTrainer(Trainer):
             else:
                 logging.info("Reverting the Model to the previous version...")
                 model.load_checkpoint(filename=best_fn)
+
+    def pickle_memory(self):
+        """ Store all the Memory for use later
+        """
+        logging.info("Pickling Memories.")
+        with open('memory.pickle', 'wb') as handle:
+            pickle.dump(self.EPISODE_MEM, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def dueling(self, nb_trials=None, player_val=0):
         """ Dueling the two models against one another

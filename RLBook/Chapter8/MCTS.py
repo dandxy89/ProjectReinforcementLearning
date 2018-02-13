@@ -21,7 +21,7 @@ class MonteCarloTreeSearch:
         Note: Based on http://mcts.ai/pubs/mcts-survey-master.pdf
 
     """
-    OUT = '%s | Action: %s | Player %s | %s Wins / %s Plays | WRatio %.3f | Q: %.3f | U: %.3f | p: %.3f | Q+U %.3f |>'
+    OUT = '%s | Action: %s | Player %s | %s Wins / %s Plays | V %.3f | Q: %.3f | U: %.3f | p: %.3f | Q+U %.3f |>'
 
     def __init__(self, game, evaluation_func, node_param=DEFAULT_NODE_PARAMS, use_nn=False):
         """ Initialise a Monte Carlo Tree Search
@@ -108,8 +108,8 @@ class MonteCarloTreeSearch:
                 # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
                 # tuples p and also a score v in [-1, 1] for the current player.
                 action_prob, leaf_value = self.policy(states)
-                properties["PRIOR"] = action_prob[index][1]
-
+                properties["PRIOR"] = action_prob[self.GAME.translate(selected_play)][1]
+                properties["V"] = leaf_value
             else:
                 properties["PRIOR"] = 1
 
@@ -205,7 +205,7 @@ class MonteCarloTreeSearch:
         for indent, _, node in RenderTree(self.root, childiter=self.sort_by_move):
             if level == -1 or node in nodes_selections:
                 result.append((self.OUT % (indent, node.ACTION, node.GAME.current_player.display, node.N_WINS,
-                                           node.N_PLAYS, 100 * node.N_WINS / node.N_PLAYS, node.Q, node.U,
+                                           node.N_PLAYS, node.V, node.Q, node.U,
                                            node.PRIOR, node.Q + node.U)))
 
         # Display the result
