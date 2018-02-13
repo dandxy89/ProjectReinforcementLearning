@@ -38,10 +38,10 @@ def main():
         # Stochastic: move, _ = tree.recommended_play(train=True)
 
         # Play the recommended move and store the move
+        tree.show_tree(level=1)
         new_game.play(move=move)
 
         # Show the tree and board, debugging
-        tree.show_tree(level=1)
         new_game.show_board()
 
 

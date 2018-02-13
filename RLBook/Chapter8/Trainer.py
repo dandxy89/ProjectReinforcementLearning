@@ -73,10 +73,11 @@ class TicTacToeTrainer(Trainer):
 
             # Play the recommended move and store the move
             move, action_prob = tree.recommended_play(train=False)
+            tree.show_tree(level=1)
             new_game.play(move=move, action_prob=action_prob)
+
             logging.info("Showing board!")
             new_game.show_board()
-            tree.show_tree(level=1)
 
         if new_game.winner is not None:
             # Remove the first item - the first element in the list is just used for viz
