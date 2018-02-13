@@ -19,7 +19,9 @@ class KerasModel(NeuralNet):
     """
 
     def __init__(self, config: Config = Config()):
-        """
+        """ Initialise a Keras Model with its own configuration
+
+            Default will not include any ResNet blocks.
 
             :param config:
 
@@ -48,10 +50,10 @@ class KerasModel(NeuralNet):
 
     @staticmethod
     def concatenate_arrays(tuple_arrays):
-        """
+        """ This will translate the List of Lists into three numpy arrays
 
-            :param tuple_arrays:
-            :return:
+            :param tuple_arrays:    List of Lists containing the training data
+            :return:                Three numpy arrays for State, Policy and Value
 
         """
         state_ary, policy_ary, z_ary = tuple_arrays[0], tuple_arrays[1], tuple_arrays[2]
@@ -60,10 +62,10 @@ class KerasModel(NeuralNet):
                np.concatenate(z_ary, axis=0)
 
     def train(self, tuple_arrays):
-        """
+        """ Training method to invoke the training of the Neural Network
 
-            :param tuple_arrays:
-            :return:
+            :param tuple_arrays:    List of Lists containing the training data
+            :return:                None
 
         """
         # Concatenate the Arrays and get the training data
@@ -72,7 +74,7 @@ class KerasModel(NeuralNet):
         # Train the Model
         self.model.fit(x=state_ary, y=[policy_ary, z_ary], shuffle=self.config.EPOCHS,
                        batch_size=self.config.BATCH_SIZE, epochs=self.config.EPOCHS,
-                       verbose=1)
+                       verbose=self.config.VERBOSE)
 
     def predict(self, tuple_arrays=None, state=None, current_player=0):
         """ Prediction
@@ -83,12 +85,9 @@ class KerasModel(NeuralNet):
             :return:
 
         """
-        if tuple_arrays is not None:
-            tuples, value = self.model.predict(x=tuple_arrays, verbose=0)
+        tuples, value = self.model.predict(x=tuple_arrays, verbose=self.config.VERBOSE)
 
-            return [(val, prob) for val, prob in enumerate(tuples[0])], value[0][0]
-        else:
-            self._handle_state(state=state, current_player=current_player)
+        return [(val, prob) for val, prob in enumerate(tuples[0])], value[0][0]
 
     def _handle_state(self, state, current_player):
         """

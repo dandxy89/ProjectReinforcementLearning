@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 """ RLBook.Chapter8.TrainerMain
+
+-   The purpose of this function is to train two self playing agents against one another in similar
+    fashion as to how AlphaZero was reported to have played.
+
 """
 import logging
 
-from RLBook.Chapter8.NNetPlayers import NNetPlayers
+from RLBook.Chapter8.Config import Config
+from RLBook.Chapter8.NNetPlayers import NNetPlayers, create_keras_models
 from RLBook.Chapter8.TicTacToe import Game
 from RLBook.Chapter8.Trainer import TicTacToeTrainer
 
@@ -13,12 +18,20 @@ logging.basicConfig(level=logging.INFO,
 
 
 def train_model():
-    # params:
+    # custom params
     trainer_config = {}
+    nn_net_one = {}
+    nn_net_two = {}
+
+    # Initialise both the Game and each Players Models
     game = Game(players=NNetPlayers, using_nn=True, nn_player=0)
+    models = create_keras_models(config1=Config(**nn_net_one),
+                                 config2=Config(**nn_net_two))
 
     # Initialise a TicTacToe Trainer
-    trainer = TicTacToeTrainer(environment=game, trainer_config=trainer_config)
+    trainer = TicTacToeTrainer(environment=game,
+                               trainer_config=trainer_config,
+                               eval_functions=models)
 
     # Commence self-play
     trainer.self_play()

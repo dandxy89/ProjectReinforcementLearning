@@ -163,8 +163,8 @@ class Game:
     def translate(self, position):
         """ Translate tuple to Index
 
-            :param position:
-            :return:
+            :param position:    Tuple of the Position
+            :return:            Index in the Array (0-8)
 
         """
         return self.DICTIONARY.get(position)

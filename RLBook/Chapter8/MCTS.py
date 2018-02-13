@@ -12,7 +12,6 @@ import numpy as np
 from anytree import Node, LevelOrderGroupIter, RenderTree
 
 from RLBook.Chapter8 import DEFAULT_NODE_PARAMS
-from RLBook.Chapter8.TicTacToe import Game
 from RLBook.Utils.MathOperations import upper_confidence_bound
 
 
@@ -33,6 +32,7 @@ class MonteCarloTreeSearch:
 
         """
         self.GAME = game
+        self.players = game.players
         self.policy = evaluation_func
 
         self.node_init_params = node_param
@@ -82,38 +82,34 @@ class MonteCarloTreeSearch:
         already_played = [node.GAME.last_play for node in parent.children]
         unexplored_plays = [play for play in parent.GAME.legal_plays() if play not in already_played]
 
-        # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
-        # tuples p and also a score v in [-1, 1] for the current player.
-        if self.use_nn:
-            # Get empty templates
-            states, state, value = np.zeros((1, 2, 3, 3)), parent.GAME.player.value, parent.GAME.player.value
-
-            # Translate the States
-            for index in range(2):
-                if index == value:
-                    states[0, index, :, :] = np.abs(np.where(state == value, state, 0))
-                else:
-                    states[0, index, :, :] = np.abs(np.where(state != value, state, 0))
-
-            # Get a prediction
-            action_prob, leaf_value = self.policy(states)
-
         if unexplored_plays:
             # Choose one play randomly
             index = np.random.choice(len(unexplored_plays), 1)[0]
             selected_play = unexplored_plays[index]
 
             # Create a new node where this play is performed
-            child_game = Game(players=parent.GAME.players,
-                              using_nn=parent.GAME.using_nn,
-                              nn_player=parent.GAME.nn_player)
+            child_game = deepcopy(parent.GAME)
             child_game.play(selected_play)
             child_name = parent.name + '_' + str(len(parent.children))
 
             # Pass the Properties
             properties = deepcopy(self.node_init_params)
             if self.use_nn:
+                # Get empty templates
+                states, state, value = np.zeros((1, 2, 3, 3)), parent.GAME.player.value, parent.GAME.nn_index[0]
+
+                # Translate the States
+                for index in range(2):
+                    if index == value:
+                        states[0, index, :, :] = np.abs(np.where(state == value, state, 0))
+                    else:
+                        states[0, index, :, :] = np.abs(np.where(state != value, state, 0))
+
+                # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
+                # tuples p and also a score v in [-1, 1] for the current player.
+                action_prob, leaf_value = self.policy(states)
                 properties["PRIOR"] = action_prob[index][1]
+
             else:
                 properties["PRIOR"] = 1
 
@@ -137,9 +133,7 @@ class MonteCarloTreeSearch:
 
         """
         # Play a game until the end
-        game = Game(players=node.GAME.players,
-                    using_nn=node.GAME.using_nn,
-                    nn_player=node.GAME.nn_player)
+        game = deepcopy(node.GAME)
 
         while game.legal_plays():
             game.play()
@@ -186,8 +180,8 @@ class MonteCarloTreeSearch:
     def sort_by_move(nodes):
         """ Sort nodes by move from (0, 0) to (2,2)
 
-            :param nodes:       list of nodes
-            :return:            sorted list
+            :param nodes:       List of nodes
+            :return:            Sorted list
 
         """
         return sorted(nodes, key=lambda n: n.GAME.last_play)
@@ -195,8 +189,8 @@ class MonteCarloTreeSearch:
     def show_tree(self, level=-1):
         """ Print the current state of the tree along with some statistics on nodes
 
-            :param level:               max level to print. If -1 print full tree
-            :return:                    tree representation as a string or nothing if printed
+            :param level:               Max level to print. If -1 print full tree
+            :return:                    Tree representation as a string or nothing if printed
 
         """
         result = []

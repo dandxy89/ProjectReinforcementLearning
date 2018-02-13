@@ -2,6 +2,7 @@
 """ Chapter8.MCTS
 
 -   Simple implementation demonstrating using MCTS for the purpose of playing the game of TicTacToe
+-   Was used to ensure that the MCTS and Game were working as expecting whilst un-going changes
 
 """
 from copy import deepcopy

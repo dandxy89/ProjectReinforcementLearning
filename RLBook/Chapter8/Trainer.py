@@ -7,11 +7,13 @@
 
 """
 import logging
+from copy import deepcopy
 
 import numpy as np
 
 from RLBook.Chapter8.Config import EnvConfig
 from RLBook.Chapter8.MCTS import MonteCarloTreeSearch
+from RLBook.Chapter8.NNetPlayers import create_keras_models
 from RLBook.Chapter8.TicTacToe import Game
 from RLBook.Utils.Player import Player
 from RLBook.Utils.Trainer import Trainer
@@ -22,7 +24,7 @@ class TicTacToeTrainer(Trainer):
     """
     CHECKPOINT = 0
 
-    def __init__(self, environment=Game(), trainer_config={}):
+    def __init__(self, environment=Game(), trainer_config={}, eval_functions=create_keras_models()):
         """ Initialise a Tic-Tac-Toe trainer
 
             Used for:
@@ -36,6 +38,7 @@ class TicTacToeTrainer(Trainer):
 
         """
         super().__init__(environment=environment, trainer_config=EnvConfig(**trainer_config))
+        self.eval_function = eval_functions
 
     def __repr__(self):
         return "< TicTacToe Trainer Class >"
@@ -44,19 +47,24 @@ class TicTacToeTrainer(Trainer):
         return "< TicTacToe Trainer Class >"
 
     def run_episode(self, eval_phase=True):
-        """
+        """ This function will run only one episode until the game terminates
 
-            :return:
+            If there is a winner the game states will be added to the Memory
 
         """
-        new_game = Game(players=self.GAME.players, using_nn=True, nn_player=self.GAME.nn_player)
+        new_game = deepcopy(self.GAME)
         winner = None
+
+        # Alternate Starting Player
+        if np.random.random() > 0.5:
+            new_game.current_player = next(new_game.players_gen)
 
         # Play until end
         while new_game.legal_plays():
             # Rollout the Tree
             tree = MonteCarloTreeSearch(game=new_game,
-                                        evaluation_func=new_game.player.func,
+                                        # Any model should have a predict method passed
+                                        evaluation_func=self.eval_function[str(new_game.player.value)].predict,
                                         node_param=new_game.player.mcts_params,
                                         use_nn=new_game.player.use_nn)
 
@@ -64,7 +72,7 @@ class TicTacToeTrainer(Trainer):
             tree.search(*new_game.player.mcts_search)
 
             # Play the recommended move and store the move
-            move, action_prob = tree.recommended_play(train=eval_phase)
+            move, action_prob = tree.recommended_play(train=False)
             new_game.play(move=move, action_prob=action_prob)
             logging.info("Showing board!")
             new_game.show_board()
@@ -111,7 +119,8 @@ class TicTacToeTrainer(Trainer):
         best_fn = self.player_check(player=player)
 
         # Create a check-point
-        player.model.save_checkpoint(filename=best_fn)
+        model = self.eval_function[str(player.value)]
+        model.save_checkpoint(filename=best_fn)
         player.check = 1
 
         for each_iteration in range(self.CONFIG.N_ITERATION):
@@ -124,14 +133,14 @@ class TicTacToeTrainer(Trainer):
                 self.run_episode()
 
                 # Running the training of NNet
-                if len(self.EPISODE_MEM[0]) > 0:
-                    player.model.train(self.EPISODE_MEM)
+                if self.EPISODE_MEM:
+                    model.train(self.EPISODE_MEM)
 
             # Get the Best Function
             new_best_fn = self.player_check(player=player)
 
             # Once all the training has happened lets now update the underlying NNet Model
-            player.model.save_checkpoint(filename=new_best_fn)
+            model.save_checkpoint(filename=new_best_fn)
             player.check = 1
 
             # Allow the models to compete against one another
@@ -144,10 +153,11 @@ class TicTacToeTrainer(Trainer):
                 best_fn = new_best_fn
 
                 # Replace the self play model
-                other_player.model.load_checkpoint(filename=best_fn)
+                other_model = self.eval_function[str(other_player.value)]
+                other_model.load_checkpoint(filename=best_fn)
             else:
                 logging.info("Reverting the Model to the previous version...")
-                player.model.load_checkpoint(filename=best_fn)
+                model.load_checkpoint(filename=best_fn)
 
     def dueling(self, nb_trials=None, player_val=0):
         """ Dueling the two models against one another
@@ -166,7 +176,6 @@ class TicTacToeTrainer(Trainer):
             n_plays += 1
 
             # Run the episode and determine if it classes as a win... including draws
-            # TODO: Determine if and when its best not to have this setup or not...
             winner = self.run_episode(eval_phase=False)
             if winner == player_val or winner == 0:
                 n_wins += 1
@@ -179,6 +188,8 @@ class TicTacToeTrainer(Trainer):
 
     def human_play(self, human, agent: Player):
         """ Human vs AI Agent
+
+            TODO: Implement this!
 
             :return:
 

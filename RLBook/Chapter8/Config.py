@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-""" Chapter8.KerasModel
+""" Chapter8.Config
 
--   Keras Model - Replicating the work by AlphaZero
+This script contains both Model (Keras) configuration and the Trainers configuration settings.
 
 """
 import datetime
@@ -35,12 +35,13 @@ class Config:
     ACTIVATION_POLICY = "softmax"
     VALUE_FC_SIZE = 1
     BATCH_SIZE = 8
-    EPOCHS = 2
+    EPOCHS = 5
     MCTS_ITERATIONS = 10000
     MCTS_MAX_TIME = 9
     MOMENTUM = 0.9
     LR = 1e-2
     SHUFFLE = True
+    VERBOSE = 0
 
     # MCTS Defaults
     N_PLAYS = 0
@@ -97,7 +98,7 @@ class EnvConfig:
     def __init__(self, **kwargs):
         """
 
-            :param kwargs:
+            :param kwargs:  Dictionary of kwargs
 
         """
         # params
