@@ -71,9 +71,30 @@ class KerasModel(NeuralNet):
         # Concatenate the Arrays and get the training data
         state_ary, policy_ary, z_ary = self.concatenate_arrays(tuple_arrays=tuple_arrays)
 
+        try:
+            # Train the Model
+            self._train(policy_ary, state_ary, z_ary)
+
+        except RuntimeError:
+            # The Model may require it to be compiled post load
+            self.model.compile()
+
+            # Train the Model
+            self._train(policy_ary, state_ary, z_ary)
+
+    def _train(self, policy_ary, state_ary, z_ary):
+        """ Private method to call the training of the model
+
+            :param policy_ary:      Policy
+            :param state_ary:       State Matrix
+            :param z_ary:           Value
+
+        """
         # Train the Model
-        self.model.fit(x=state_ary, y=[policy_ary, z_ary], shuffle=self.config.EPOCHS,
-                       batch_size=self.config.BATCH_SIZE, epochs=self.config.EPOCHS,
+        self.model.fit(x=state_ary, y=[policy_ary, z_ary],
+                       shuffle=self.config.EPOCHS,
+                       batch_size=self.config.BATCH_SIZE,
+                       epochs=self.config.EPOCHS,
                        verbose=self.config.VERBOSE)
 
     def predict(self, tuple_arrays=None, state=None, current_player=0):

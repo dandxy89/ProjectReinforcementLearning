@@ -87,6 +87,7 @@ class TicTacToeTrainer(Trainer):
             new_game.show_board()
 
         if new_game.winner is not None:
+            logging.info("Winner found: {}".format(new_game.winner))
             # Remove the first item - the first element in the list is just used for viz
             new_game.history.pop(0)
 
@@ -138,9 +139,6 @@ class TicTacToeTrainer(Trainer):
             # Run a Training episode
             self.run_episode()
 
-        # Pickle the Memory
-        self.pickle_memory()
-
         for each_iteration in range(self.CONFIG.N_ITERATION):
             logging.info("Running training iteration: {}".format(each_iteration + 1))
 
@@ -164,7 +162,7 @@ class TicTacToeTrainer(Trainer):
             player.check = 1
 
             # Allow the models to compete against one another
-            win_ratio = self.dueling(nb_trials=self.CONFIG.N_DUELS, player_val=player_index)
+            win_ratio = self.dueling(nb_trials=self.CONFIG.N_DUELS, player_val=player.value)
 
             # If the Win ratio is greater than the Min Win Ratio then replace - otherwise revert
             if win_ratio > self.CONFIG.WIN_RATIO:
@@ -179,11 +177,14 @@ class TicTacToeTrainer(Trainer):
                 logging.info("Reverting the Model to the previous version...")
                 model.load_checkpoint(filename=best_fn)
 
+            # Pickle the Memory
+            self.pickle_memory()
+
     def pickle_memory(self):
         """ Store all the Memory for use later
         """
         logging.info("Pickling Memories.")
-        with open('memory.pickle', 'wb') as handle:
+        with open("memory.pickle", "wb") as handle:
             pickle.dump(self.EPISODE_MEM, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def dueling(self, nb_trials=None, player_val=0):

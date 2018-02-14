@@ -40,7 +40,7 @@ class MonteCarloTreeSearch:
 
         self.use_nn = use_nn
 
-    def selection(self, scoring_func=upper_confidence_bound, prob=0.12):
+    def selection(self, scoring_func=upper_confidence_bound, prob=0.5):
         """ Select a node of the tree based on scores or expand current one (if not all children have been visited)
 
             :param scoring_func:        the function that takes as inputs (n_plays, n_wins, n_ties) and output
@@ -95,21 +95,14 @@ class MonteCarloTreeSearch:
             # Pass the Properties
             properties = deepcopy(self.node_init_params)
             if self.use_nn:
-                # Get empty templates
-                states, state, value = np.zeros((1, 2, 3, 3)), parent.GAME.player.value, parent.GAME.nn_index[0]
-
-                # Translate the States
-                for index in range(2):
-                    if index == value:
-                        states[0, index, :, :] = np.abs(np.where(state == value, state, 0))
-                    else:
-                        states[0, index, :, :] = np.abs(np.where(state != value, state, 0))
+                # Get empty templates & Translate the States
+                states, state, value = np.zeros((1, 2, 3, 3)), child_game.state, parent.GAME.nn_index[0].value
+                states = self._get_state(states, state, value)
 
                 # Evaluate the leaf using a network (value & policy) which outputs a list of (action, probability)
                 # tuples p and also a score v in [-1, 1] for the current player.
-                action_prob, leaf_value = self.policy(states)
+                action_prob, properties["V"] = self.policy(states)
                 properties["PRIOR"] = action_prob[self.GAME.translate(selected_play)][1]
-                properties["V"] = leaf_value
             else:
                 properties["PRIOR"] = 1
 
@@ -124,6 +117,21 @@ class MonteCarloTreeSearch:
             node = parent
 
         return node
+
+    @staticmethod
+    def _get_state(states, state, value):
+        """
+
+            :param states:
+            :param state:
+            :param value:
+            :return:
+
+        """
+        states[0, 0, :, :] = np.abs(np.where(state == value, state, 0))
+        states[0, 1, :, :] = np.abs(np.where(state != value, state, 0))
+
+        return states
 
     def simulation(self, node):
         """ Simulate games from current game state and returns number of wins
@@ -156,17 +164,17 @@ class MonteCarloTreeSearch:
         node.N_PLAYS += 1
         node.N_WINS += 1 if leaf_value >= 1 else 0
         node.N_TIES += 1 if leaf_value == 0 else 0
-        node.Q = self.update_q(leaf_value=leaf_value, node=node)
+        node.Q = self._update_q(leaf_value=leaf_value, node=node)
 
         # All all of the ancestors
         for ancestor in node.ancestors:
             ancestor.N_PLAYS += 1
             ancestor.N_WINS += 1 if leaf_value >= 1 else 0
             ancestor.N_TIES += 1 if leaf_value == 0 else 0
-            ancestor.Q = self.update_q(leaf_value=leaf_value, node=ancestor)
+            ancestor.Q = self._update_q(leaf_value=leaf_value, node=ancestor)
 
     @staticmethod
-    def update_q(leaf_value, node):
+    def _update_q(leaf_value, node):
         """ Update function for Q
 
             :param leaf_value:      Leaf value
@@ -177,7 +185,7 @@ class MonteCarloTreeSearch:
         return leaf_value if node.Q == 0 else (node.N_PLAYS * node.Q + leaf_value) / (node.N_PLAYS + 1)
 
     @staticmethod
-    def sort_by_move(nodes):
+    def _sort_by_move(nodes):
         """ Sort nodes by move from (0, 0) to (2,2)
 
             :param nodes:       List of nodes
@@ -202,7 +210,7 @@ class MonteCarloTreeSearch:
             nodes_selections = []
 
         # Iterate through the Tree and construct the Output
-        for indent, _, node in RenderTree(self.root, childiter=self.sort_by_move):
+        for indent, _, node in RenderTree(self.root, childiter=self._sort_by_move):
             if level == -1 or node in nodes_selections:
                 result.append((self.OUT % (indent, node.ACTION, node.GAME.current_player.display, node.N_WINS,
                                            node.N_PLAYS, node.V, node.Q, node.U,

@@ -23,8 +23,8 @@ def train_model():
     trainer_config = {}
     nn_net_one = {}
     nn_net_two = {}
-    with open('memory.pickle', 'rb') as handle:
-        memory = pickle.load(handle)
+    with open("memory.pickle", "rb") as handle:
+        memory_data = pickle.load(handle)
 
     # Initialise both the Game and each Players Models
     game = Game(players=NNetPlayers, using_nn=True, nn_player=0)
@@ -35,11 +35,11 @@ def train_model():
     trainer = TicTacToeTrainer(environment=game,
                                trainer_config=trainer_config,
                                eval_functions=models,
-                               memory=memory)
+                               memory=memory_data)
 
     # Commence self-play
     trainer.self_play()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     train_model()
