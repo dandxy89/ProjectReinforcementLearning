@@ -184,7 +184,7 @@ class TicTacToeTrainer(Trainer):
         """ Store all the Memory for use later
         """
         logging.info("Pickling Memories.")
-        with open("memory.pickle", "wb") as handle:
+        with open("ttt_memory.pickle", "wb") as handle:
             pickle.dump(self.EPISODE_MEM, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def dueling(self, nb_trials=None, player_val=0):

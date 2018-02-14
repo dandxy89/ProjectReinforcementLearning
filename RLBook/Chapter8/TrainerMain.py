@@ -23,7 +23,7 @@ def train_model():
     trainer_config = {}
     nn_net_one = {}
     nn_net_two = {}
-    with open("memory.pickle", "rb") as handle:
+    with open("ttt_memory.pickle", "rb") as handle:
         memory_data = pickle.load(handle)
 
     # Initialise both the Game and each Players Models
