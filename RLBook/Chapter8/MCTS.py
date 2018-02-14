@@ -272,6 +272,7 @@ class MonteCarloTreeSearch:
 
         """
         records = np.array([np.power(n.U, 1 / n.TAU) for val, n in enumerate(nodes)])
+        records[records < 0] = 0
         records /= records.sum()
 
         return nodes[np.random.choice(len(records), p=records)]
