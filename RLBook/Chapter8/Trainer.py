@@ -79,7 +79,7 @@ class TicTacToeTrainer(Trainer):
             tree.search(*new_game.player.mcts_search)
 
             # Play the recommended move and store the move
-            move, action_prob = tree.recommended_play(train=False)
+            move, action_prob = tree.recommended_play(train=eval_phase)
             tree.show_tree(level=1)
             new_game.play(move=move, action_prob=action_prob)
 
