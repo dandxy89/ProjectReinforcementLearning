@@ -105,12 +105,12 @@ class EnvConfig:
         # params
         self.N_ITERATION = 30
         self.N_EPISODE = 40
-        self.WIN_RATIO = 0.52
+        self.WIN_RATIO = 0.30
         self.N_DUELS = 10
         self.START_TIME = datetime.datetime.now()
         self.START_T = time.time()
-        self.EVALUATIONS = 10
-        self.WARM_UP_ITERATION = 20
+        self.EVALUATIONS = 20
+        self.WARM_UP_ITERATION = 3
 
         for k in kwargs:
             # If the Key is in the accepted list then update

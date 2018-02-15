@@ -82,14 +82,18 @@ class ResidualNet:
 
         return x
 
-    def compile_model(self):
+    def compile_model(self, build=True):
         """ Compile the Keras Model
 
             :return:        Keras compiled model and optimisation
             :rtype:         Optimizer, Model
 
         """
-        model = self.build()
+        if build:
+            model = self.build()
+        else:
+            model = self.model
+
         # Define the Optimizer
         optimisation = SGD(lr=self.config.LR,
                            momentum=self.config.MOMENTUM)

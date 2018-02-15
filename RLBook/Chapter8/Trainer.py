@@ -173,9 +173,11 @@ class TicTacToeTrainer(Trainer):
                 # Replace the self play model
                 other_model = self.eval_function[str(other_player.value)]
                 other_model.load_checkpoint(filename=best_fn)
+                _, other_model.model = other_model.net.compile_model()
             else:
                 logging.info("Reverting the Model to the previous version...")
                 model.load_checkpoint(filename=best_fn)
+                _, model.model = model.net.compile_model()
 
             # Pickle the Memory
             self.pickle_memory()
