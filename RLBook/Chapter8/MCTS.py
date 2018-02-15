@@ -94,6 +94,7 @@ class MonteCarloTreeSearch:
 
             # Pass the Properties
             properties = deepcopy(self.node_init_params)
+
             if self.use_nn:
                 # Get empty templates & Translate the States
                 states, state, value = np.zeros((1, 2, 3, 3)), child_game.state, parent.GAME.nn_index[0].value
