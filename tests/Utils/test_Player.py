@@ -42,13 +42,17 @@ class TestUtilsPlayer(unittest.TestCase):
         """
         p5 = Player(name="Dan", value=90, display="D")
 
-        assert p5.mcts_search == (30000, 20)
-        assert p5.nn_params == {'CNN_FILTER_SIZE': 1, 'BATCH_SIZE': 1, 'EPOCHS': 2, 'ACTIVATION_POLICY': 'softmax',
-                                'VALUE_FC_SIZE': 1, 'L2_REG': 0.0002, 'MCTS_MAX_TIME': 20, 'RES_LAYER_NUM': 0,
-                                'CNN_FILTER_NUM': 2, 'MODEL_TYPE': 'ResNet',
+        assert p5.mcts_search == (10000, 8)
+        print(p5.nn_params)
+        assert p5.nn_params == {'MCTS_MAX_TIME': 8, 'ACTIVATION_DENSE': 'tanh', 'CNN_FILTER_SIZE': 1,
+                                'MODEL_TYPE': 'ResNet',
+                                'VALUE_FC_SIZE': 1, 'ACTIVATION': 'relu',
                                 'MODEL_NAME': datetime.datetime.now().strftime("%Y%m%d_KerasModel_TTT_V"),
-                                'ACTIVATION': 'relu', 'ACTIVATION_DENSE': 'tanh', 'MCTS_ITERATIONS': 30000,
-                                'N_LABELS': 9}
+                                'RES_LAYER_NUM': 0,
+                                'CNN_FILTER_NUM': 2, 'EPOCHS': 3, 'ACTIVATION_POLICY': 'softmax', 'L2_REG': 0.0002,
+                                'MCTS_ITERATIONS': 10000,
+                                'BATCH_SIZE': 8, 'N_LABELS': 9}
+
         assert not p5.use_nn
 
 

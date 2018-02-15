@@ -20,7 +20,7 @@ class TestUtilsTrainer(unittest.TestCase):
     def test_trainer_init(self):
         """ Trainer class init
         """
-        t = Trainer(environment="Game", trainer_config="MSc Dan", agents=["A", "B"])
+        t = Trainer(environment="Game", trainer_config="MSc Dan")
 
         assert isinstance(t, Trainer)
 

@@ -32,41 +32,43 @@ class TestChapter8Config(unittest.TestCase):
         """
         c1 = Config()
 
-        assert c1.mcts_params == {'Q': 0.0, 'PRIOR': 1.0, 'SCORE': 0.0, 'N_WINS': 0, 'ACTION': None, 'C_PUCT': 2.0,
-                                  'N_PLAYS': 0, 'TAU': 1.0, 'U': 0.0, 'N_TIES': 0}
+        assert c1.mcts_params == {'Q': 0.0, 'TAU': 1.0, 'C_PUCT': 2.0, 'N_PLAYS': 0, 'U': 0.0, 'ACTION': None,
+                                  'N_WINS': 0, 'V': 0.0, 'SCORE': 0.0, 'N_TIES': 0, 'PRIOR': 1.0}
 
     def test_agent_mcts_search(self):
         """ TODO
         """
         c2 = Config()
 
-        assert c2.mcts_search == (30000, 20)
+        assert c2.mcts_search == (10000, 8)
 
     def test_agent_nn_params(self):
         """ TODO
         """
         c3 = Config()
 
-        assert c3.nn_params == {'VALUE_FC_SIZE': 1, 'EPOCHS': 2, 'ACTIVATION_POLICY': 'softmax', 'MODEL_TYPE': 'ResNet',
-                                'N_LABELS': 9, 'CNN_FILTER_NUM': 2, 'L2_REG': 0.0002, 'CNN_FILTER_SIZE': 1,
+        assert c3.nn_params == {'N_LABELS': 9, 'BATCH_SIZE': 8, 'CNN_FILTER_SIZE': 1, 'MCTS_MAX_TIME': 8, 'EPOCHS': 3,
+                                'RES_LAYER_NUM': 0,
+                                'L2_REG': 0.0002, 'MCTS_ITERATIONS': 10000, 'ACTIVATION': 'relu',
                                 'MODEL_NAME': '{}_KerasModel_TTT_V'.format(datetime.datetime.now().strftime("%Y%m%d")),
-                                'MCTS_MAX_TIME': 20, 'ACTIVATION': 'relu',
-                                'RES_LAYER_NUM': 0, 'BATCH_SIZE': 1, 'MCTS_ITERATIONS': 30000,
-                                'ACTIVATION_DENSE': 'tanh'}
+                                'ACTIVATION_DENSE': 'tanh', 'VALUE_FC_SIZE': 1, 'CNN_FILTER_NUM': 2,
+                                'MODEL_TYPE': 'ResNet',
+                                'ACTIVATION_POLICY': 'softmax'}
 
     def test_agent_get_all(self):
         """ TODO
         """
         c4 = Config()
 
-        assert c4.get_all == {'CNN_FILTER_NUM': 2, 'ACTIVATION': 'relu', 'N_PLAYS': 0,
+        assert c4.get_all == {'N_PLAYS': 0, 'ACTIVATION': 'relu', 'N_WINS': 0, 'VALUE_FC_SIZE': 1,
+                              'MODEL_TYPE': 'ResNet',
+                              'ACTIVATION_DENSE': 'tanh', 'PRIOR': 1.0, 'N_LABELS': 9,
                               'MODEL_NAME': '{}_KerasModel_TTT_V'.format(datetime.datetime.now().strftime("%Y%m%d")),
-                              'ACTION': None, 'MCTS_MAX_TIME': 20,
-                              'RES_LAYER_NUM': 0, 'TAU': 1.0, 'PRIOR': 1.0, 'N_TIES': 0, 'ACTIVATION_DENSE': 'tanh',
-                              'ACTIVATION_POLICY': 'softmax', 'N_LABELS': 9, 'U': 0.0, 'C_PUCT': 2.0,
-                              'MCTS_ITERATIONS': 30000, 'MODEL_TYPE': 'ResNet', 'BATCH_SIZE': 1, 'Q': 0.0,
-                              'CNN_FILTER_SIZE': 1, 'L2_REG': 0.0002, 'VALUE_FC_SIZE': 1, 'EPOCHS': 2, 'N_WINS': 0,
-                              'SCORE': 0.0}
+                              'BATCH_SIZE': 8, 'MCTS_ITERATIONS': 10000, 'V': 0.0, 'CNN_FILTER_NUM': 2,
+                              'MCTS_MAX_TIME': 8, 'Q': 0.0,
+                              'RES_LAYER_NUM': 0, 'U': 0.0, 'L2_REG': 0.0002, 'N_TIES': 0, 'ACTION': None,
+                              'CNN_FILTER_SIZE': 1,
+                              'ACTIVATION_POLICY': 'softmax', 'EPOCHS': 3, 'TAU': 1.0, 'C_PUCT': 2.0, 'SCORE': 0.0}
 
     def test_initialise_env(self):
         """ Test the Initiation of the Env class
@@ -81,7 +83,7 @@ class TestChapter8Config(unittest.TestCase):
 
         assert e1.__repr__() == '< Environment Config >'
         assert isinstance(e1, EnvConfig)
-        assert e1.N_ITERATION == 5
+        assert e1.N_ITERATION == 30
 
     def test_env_get_all(self):
         """ TODO
@@ -93,7 +95,7 @@ class TestChapter8Config(unittest.TestCase):
         del d["START_T"]
         del d["START_TIME"]
 
-        assert d == dict(N_ITERATION=5, N_EPISODE=5, EVALUATIONS=10, WIN_RATIO=0.55)
+        assert d == {'N_EPISODE': 40, 'WIN_RATIO': 0.3, 'EVALUATIONS': 20, 'N_ITERATION': 30}
 
 
 if __name__ == '__main__':
