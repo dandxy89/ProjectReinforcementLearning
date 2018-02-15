@@ -1,3 +1,8 @@
+
+| Project                        | Created   | Updated    | Version |
+|--------------------------------|-----------|------------|---------|
+| Project Reinforcement Learning | 07/1/2017 | 15/02/2017 | 0.1.0   |
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge

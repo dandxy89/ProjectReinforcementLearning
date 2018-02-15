@@ -12,7 +12,8 @@ setup(
     version="0.1.0",
     # Module Short and Long Descriptions.
     description="Solutions to exercises from the RL book.",
-    long_description="Solutions to exercises from the Reinforcement Learning: An Introduction Book by Andrew Barto and Richard S. Sutton.",
+    long_description="Solutions to exercises from the Reinforcement Learning: An Introduction book "
+                     "by Andrew Barto and Richard S. Sutton.",
     # The project"s main homepage.
     url="",
     # Author Details.
