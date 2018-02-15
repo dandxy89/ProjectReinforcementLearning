@@ -1,7 +1,7 @@
 
 | Project                        | Created   | Updated    | Version |
 |--------------------------------|-----------|------------|---------|
-| Project Reinforcement Learning | 07/1/2017 | 15/02/2017 | 0.1.0   |
+| Project Reinforcement Learning | 07/1/2017 | 15/02/2017 | 0.1.1   |
 
 # Project Reinforcement Learning
 

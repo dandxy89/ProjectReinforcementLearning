@@ -7,7 +7,7 @@
 
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __developers__ = "Dan Dixey (2018)"
 
 # Default Node Initialisation with these parameters

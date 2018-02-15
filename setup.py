@@ -9,7 +9,7 @@ setup(
     # Module Name.
     name="RLBook",
     # Versions should comply with PEP440.
-    version="0.1.0",
+    version="0.1.1",
     # Module Short and Long Descriptions.
     description="Solutions to exercises from the RL book.",
     long_description="Solutions to exercises from the Reinforcement Learning: An Introduction book "
