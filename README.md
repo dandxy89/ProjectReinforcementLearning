@@ -15,7 +15,7 @@ After reading Deep Thinking by Gary Kasparov - I know want to implement an Agent
 
 *   Revisiting Agent based systems and Reinforcement from University
 *   Implement the algorithms from scratch
-*   Eventually... get to the point where I can implement, appreciate and replicate to some degree the work by DeepMind, specifically AlplhaZero.
+*   Eventually... get to the point where I can implement, appreciate and replicate to some degree the work by DeepMind, specifically AlphaZero.
 
 # End Goal
 
