@@ -44,7 +44,7 @@ setup(
                       "Keras==2.1.3",
                       "numpy==1.14.0",
                       "pandas==0.22.0",
-                      "tensorflow==2.3.1",
+                      "tensorflow==2.4.0",
                       "tqdm==4.19.5"],
     # List additional groups of dependencies here (e.g. development dependencies).
     extras_require={
